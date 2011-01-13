@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "proj", "proj", "{B391D8A3-7309-4DF0-9B1A-DE3554E9374A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D36E996D-944D-48EC-8C9A-7440222B68BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorageAdapter", "src\proj\FileStorageAdapter\FileStorageAdapter.csproj", "{89E431FE-E26D-4CC9-BFF1-B38D5AC28AA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorageAdapter.AmazonS3", "src\proj\FileStorageAdapter.AmazonS3\FileStorageAdapter.AmazonS3.csproj", "{6907CC8F-BBE6-4131-8C1B-BA468BD516B5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{89E431FE-E26D-4CC9-BFF1-B38D5AC28AA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89E431FE-E26D-4CC9-BFF1-B38D5AC28AA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89E431FE-E26D-4CC9-BFF1-B38D5AC28AA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89E431FE-E26D-4CC9-BFF1-B38D5AC28AA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6907CC8F-BBE6-4131-8C1B-BA468BD516B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6907CC8F-BBE6-4131-8C1B-BA468BD516B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6907CC8F-BBE6-4131-8C1B-BA468BD516B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6907CC8F-BBE6-4131-8C1B-BA468BD516B5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{89E431FE-E26D-4CC9-BFF1-B38D5AC28AA6} = {B391D8A3-7309-4DF0-9B1A-DE3554E9374A}
+		{6907CC8F-BBE6-4131-8C1B-BA468BD516B5} = {B391D8A3-7309-4DF0-9B1A-DE3554E9374A}
+	EndGlobalSection
+EndGlobal
