@@ -5,9 +5,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "proj", "proj", "{B391D8A3-7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D36E996D-944D-48EC-8C9A-7440222B68BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorageAdapter", "src\proj\FileStorageAdapter\FileStorageAdapter.csproj", "{89E431FE-E26D-4CC9-BFF1-B38D5AC28AA6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorageAdapter", "proj\FileStorageAdapter\FileStorageAdapter.csproj", "{89E431FE-E26D-4CC9-BFF1-B38D5AC28AA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorageAdapter.AmazonS3", "src\proj\FileStorageAdapter.AmazonS3\FileStorageAdapter.AmazonS3.csproj", "{6907CC8F-BBE6-4131-8C1B-BA468BD516B5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorageAdapter.AmazonS3", "proj\FileStorageAdapter.AmazonS3\FileStorageAdapter.AmazonS3.csproj", "{6907CC8F-BBE6-4131-8C1B-BA468BD516B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
