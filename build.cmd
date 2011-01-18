@@ -8,6 +8,7 @@ msbuild /nologo /verbosity:quiet src/FileStorageAdapter.sln /p:Configuration=Rel
 
 echo Copying
 copy src\proj\FileStorageAdapter\bin\Release\*.* output\
+copy src\proj\FileStorageAdapter.AmazonS3\bin\Release\*.* output\
 
 echo Cleaning
 msbuild /nologo /verbosity:quiet src/FileStorageAdapter.sln /p:Configuration=Release /t:Clean
