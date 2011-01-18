@@ -1,5 +1,6 @@
 namespace FileStorageAdapter.AmazonS3
 {
+	using System;
 	using System.IO;
 	using Amazon.S3;
 	using Amazon.S3.Model;
@@ -23,8 +24,11 @@ namespace FileStorageAdapter.AmazonS3
 				Key = path
 			};
 
-			using (var response = this.client.GetObject(request))
-				return response.ResponseStream;
+			return ExecuteAndThrowOnFailure(() =>
+			{
+				using (var response = this.client.GetObject(request))
+					return response.ResponseStream;
+			});
 		}
 
 		public void Put(Stream input, string location)
@@ -36,9 +40,12 @@ namespace FileStorageAdapter.AmazonS3
 				Key = location
 			};
 
-			using (this.client.PutObject(request))
+			ExecuteAndThrowOnFailure(() =>
 			{
-			}
+				using (this.client.PutObject(request))
+				{
+				}
+			});
 		}
 
 		public void Delete(string path)
@@ -49,8 +56,35 @@ namespace FileStorageAdapter.AmazonS3
 				Key = path
 			};
 
-			using (this.client.DeleteObject(request))
+			ExecuteAndThrowOnFailure(() =>
 			{
+				using (this.client.DeleteObject(request))
+				{
+				}
+			});
+		}
+
+		private static void ExecuteAndThrowOnFailure(Action action)
+		{
+			try
+			{
+				action();
+			}
+			catch (AmazonS3Exception e)
+			{
+				throw new FileStorageException("Unable to store files: " + e.Message, e);
+			}
+		}
+
+		private static Stream ExecuteAndThrowOnFailure(Func<Stream> func)
+		{
+			try
+			{
+				return func();
+			}
+			catch (AmazonS3Exception e)
+			{
+				throw new FileStorageException("Unable to store files: " + e.Message, e);
 			}
 		}
 	}
