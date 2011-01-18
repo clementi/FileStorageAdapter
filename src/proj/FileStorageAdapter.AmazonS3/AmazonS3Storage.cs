@@ -7,6 +7,7 @@ namespace FileStorageAdapter.AmazonS3
 
 	public class AmazonS3Storage : IStoreFiles
 	{
+		private const string ErrorMessageFormat = "Unable to store files: {0}";
 		private readonly AmazonS3 client;
 		private readonly string bucketName;
 
@@ -72,7 +73,7 @@ namespace FileStorageAdapter.AmazonS3
 			}
 			catch (AmazonS3Exception e)
 			{
-				throw new FileStorageException("Unable to store files: " + e.Message, e);
+				throw BuildException(e);
 			}
 		}
 
@@ -84,8 +85,13 @@ namespace FileStorageAdapter.AmazonS3
 			}
 			catch (AmazonS3Exception e)
 			{
-				throw new FileStorageException("Unable to store files: " + e.Message, e);
+				throw BuildException(e);
 			}
+		}
+
+		private static FileStorageException BuildException(Exception e)
+		{
+			return new FileStorageException(string.Format(ErrorMessageFormat, e.Message), e);
 		}
 	}
 }
