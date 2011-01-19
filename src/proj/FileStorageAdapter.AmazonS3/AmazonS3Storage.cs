@@ -1,13 +1,16 @@
 namespace FileStorageAdapter.AmazonS3
 {
 	using System;
+	using System.Collections.Generic;
 	using System.IO;
+	using System.Linq;
 	using Amazon.S3;
 	using Amazon.S3.Model;
 
 	public class AmazonS3Storage : IStoreFiles
 	{
 		private const string ErrorMessageFormat = "Unable to store files: {0}";
+		private const string ForwardSlash = "/";
 		private readonly AmazonS3 client;
 		private readonly string bucketName;
 
@@ -65,6 +68,34 @@ namespace FileStorageAdapter.AmazonS3
 			});
 		}
 
+		public bool Exists(string path)
+		{
+			path = RemoveInitialForwardSlash(path);
+
+			return this.EnumerateObjects(path).Contains(path);
+		}
+
+		public IEnumerable<string> EnumerateObjects(string location)
+		{
+			location = RemoveInitialForwardSlash(location);
+
+			var request = new ListObjectsRequest
+			{
+				BucketName = this.bucketName,
+				Prefix = location
+			};
+
+			var objects = ExecuteAndThrowOnFailure(() => this.client.ListObjects(request).S3Objects);
+			return objects.Select(x => x.Key);
+		}
+
+		private static string RemoveInitialForwardSlash(string location)
+		{
+			if (location.StartsWith(ForwardSlash))
+				location = location.Substring(1);
+			return location;
+		}
+
 		private static void ExecuteAndThrowOnFailure(Action action)
 		{
 			try
@@ -77,7 +108,7 @@ namespace FileStorageAdapter.AmazonS3
 			}
 		}
 
-		private static Stream ExecuteAndThrowOnFailure(Func<Stream> func)
+		private static T ExecuteAndThrowOnFailure<T>(Func<T> func)
 		{
 			try
 			{
