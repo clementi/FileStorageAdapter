@@ -68,27 +68,6 @@ namespace FileStorageAdapter.AmazonS3
 			});
 		}
 
-		public bool Exists(string path)
-		{
-			path = RemoveInitialForwardSlash(path);
-
-			return this.EnumerateObjects(path).Contains(path);
-		}
-
-		public IEnumerable<string> EnumerateObjects(string location)
-		{
-			location = RemoveInitialForwardSlash(location);
-
-			var request = new ListObjectsRequest
-			{
-				BucketName = this.bucketName,
-				Prefix = location
-			};
-
-			var objects = ExecuteAndThrowOnFailure(() => this.client.ListObjects(request).S3Objects);
-			return objects.Select(x => x.Key);
-		}
-
 		private static string RemoveInitialForwardSlash(string location)
 		{
 			if (location.StartsWith(ForwardSlash))
