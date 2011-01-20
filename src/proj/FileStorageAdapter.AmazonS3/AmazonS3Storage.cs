@@ -1,9 +1,7 @@
 namespace FileStorageAdapter.AmazonS3
 {
 	using System;
-	using System.Collections.Generic;
 	using System.IO;
-	using System.Linq;
 	using Amazon.S3;
 	using Amazon.S3.Model;
 
@@ -35,13 +33,13 @@ namespace FileStorageAdapter.AmazonS3
 			});
 		}
 
-		public void Put(Stream input, string location)
+		public void Put(Stream input, string path)
 		{
 			var request = new PutObjectRequest
 			{
 				BucketName = this.bucketName,
 				InputStream = input,
-				Key = location
+				Key = path
 			};
 
 			ExecuteAndThrowOnFailure(() =>
