@@ -8,7 +8,6 @@ namespace FileStorageAdapter.AmazonS3
 	public class AmazonS3Storage : IStoreFiles
 	{
 		private const string ErrorMessageFormat = "Unable to store files: {0}";
-		private const string ForwardSlash = "/";
 		private readonly AmazonS3 client;
 		private readonly string bucketName;
 
@@ -23,7 +22,7 @@ namespace FileStorageAdapter.AmazonS3
 			var request = new GetObjectRequest
 			{
 				BucketName = this.bucketName,
-				Key = path
+				Key = RemotePath.Normalize(path)
 			};
 
 			return ExecuteAndThrowOnFailure(() =>
@@ -39,7 +38,7 @@ namespace FileStorageAdapter.AmazonS3
 			{
 				BucketName = this.bucketName,
 				InputStream = input,
-				Key = path
+				Key = RemotePath.Normalize(path)
 			};
 
 			ExecuteAndThrowOnFailure(() =>
@@ -55,7 +54,7 @@ namespace FileStorageAdapter.AmazonS3
 			var request = new DeleteObjectRequest
 			{
 				BucketName = this.bucketName,
-				Key = path
+				Key = RemotePath.Normalize(path)
 			};
 
 			ExecuteAndThrowOnFailure(() =>
@@ -64,13 +63,6 @@ namespace FileStorageAdapter.AmazonS3
 				{
 				}
 			});
-		}
-
-		private static string RemoveInitialForwardSlash(string location)
-		{
-			if (location.StartsWith(ForwardSlash))
-				location = location.Substring(1);
-			return location;
 		}
 
 		private static void ExecuteAndThrowOnFailure(Action action)

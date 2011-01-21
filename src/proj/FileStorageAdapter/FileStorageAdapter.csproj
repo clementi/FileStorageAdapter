@@ -35,6 +35,7 @@
   <ItemGroup>
     <Compile Include="FileStorageException.cs" />
     <Compile Include="IStoreFiles.cs" />
+    <Compile Include="RemotePath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
