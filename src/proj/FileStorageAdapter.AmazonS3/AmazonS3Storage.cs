@@ -25,11 +25,7 @@ namespace FileStorageAdapter.AmazonS3
 				Key = RemotePath.Normalize(path)
 			};
 
-			return ExecuteAndThrowOnFailure(() =>
-			{
-				using (var response = this.client.GetObject(request))
-					return response.ResponseStream;
-			});
+			return ExecuteAndThrowOnFailure(() => new DisposableS3ResponseStream(this.client.GetObject(request)));
 		}
 
 		public void Put(Stream input, string path)

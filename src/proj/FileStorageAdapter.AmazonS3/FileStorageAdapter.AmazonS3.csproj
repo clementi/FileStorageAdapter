@@ -12,8 +12,8 @@
     <AssemblyName>FileStorageAdapter.AmazonS3</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-	<SignAssembly>true</SignAssembly>
-	<AssemblyOriginatorKeyFile>..\..\FileStorageAdapter.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\FileStorageAdapter.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,6 +35,7 @@
   <ItemGroup>
     <Compile Include="AmazonS3Storage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DisposableS3ResponseStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FileStorageAdapter\FileStorageAdapter.csproj">
