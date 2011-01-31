@@ -6,11 +6,13 @@ namespace FileStorageAdapter
 	[Serializable]
 	public class FileStorageException : Exception
 	{
-		public FileStorageException(string message) : base(message)
+		private const string ErrorMessageFormat = "Unable to store files: {0}";
+
+		public FileStorageException(string message) : base(string.Format(ErrorMessageFormat, message))
 		{
 		}
 
-		public FileStorageException(string message, Exception inner) : base(message, inner)
+		public FileStorageException(string message, Exception inner) : base(string.Format(ErrorMessageFormat, message), inner)
 		{
 		}
 
