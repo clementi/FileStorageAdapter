@@ -71,6 +71,10 @@ namespace FileStorageAdapter.AmazonS3
 			{
 				throw BuildException(e);
 			}
+			catch (NullReferenceException e)
+			{
+				throw BuildException(e);
+			}
 		}
 
 		private static T ExecuteAndThrowOnFailure<T>(Func<T> func)
@@ -80,6 +84,10 @@ namespace FileStorageAdapter.AmazonS3
 				return func();
 			}
 			catch (AmazonS3Exception e)
+			{
+				throw BuildException(e);
+			}
+			catch (NullReferenceException e)
 			{
 				throw BuildException(e);
 			}
