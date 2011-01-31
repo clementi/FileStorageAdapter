@@ -2,18 +2,19 @@ namespace FileStorageAdapter.AmazonS3
 {
 	using System;
 	using System.IO;
+	using Amazon;
 	using Amazon.S3;
 	using Amazon.S3.Model;
 
-	public class AmazonS3Storage : IStoreFiles
+	public class AmazonS3Storage : IStoreFiles, IDisposable
 	{
 		private const string ErrorMessageFormat = "Unable to store files: {0}";
 		private readonly AmazonS3 client;
 		private readonly string bucketName;
 
-		public AmazonS3Storage(AmazonS3 client, string bucketName)
+		public AmazonS3Storage(string awsAccessKey, string awsSecretAccessKey, string bucketName)
 		{
-			this.client = client;
+			this.client = AWSClientFactory.CreateAmazonS3Client(awsAccessKey, awsSecretAccessKey);
 			this.bucketName = bucketName;
 		}
 
@@ -88,6 +89,18 @@ namespace FileStorageAdapter.AmazonS3
 		private static FileStorageException BuildException(Exception e)
 		{
 			return new FileStorageException(string.Format(ErrorMessageFormat, e.Message), e);
+		}
+
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+				this.client.Dispose();
 		}
 	}
 }

@@ -2,7 +2,7 @@
 
 set PATH=%PATH%;C:\Windows\Microsoft.NET\Framework\v4.0.30319\
 
-if not exist output ( mkdir output )
+if not exist output ( mkdir output ) else del /q output\*.*
 
 echo Compiling
 msbuild /nologo /verbosity:quiet src/FileStorageAdapter.sln /p:Configuration=Release /t:Clean
