@@ -22,7 +22,8 @@ namespace FileStorageAdapter.AmazonS3
 			var request = new GetObjectRequest
 			{
 				BucketName = this.bucketName,
-				Key = RemotePath.Normalize(path)
+				Key = RemotePath.Normalize(path),
+				Timeout = int.MaxValue
 			};
 
 			return ExecuteAndThrowOnFailure(() => new DisposableS3ResponseStream(this.client.GetObject(request)));
@@ -34,7 +35,9 @@ namespace FileStorageAdapter.AmazonS3
 			{
 				BucketName = this.bucketName,
 				InputStream = input,
-				Key = RemotePath.Normalize(path)
+				Key = RemotePath.Normalize(path),
+				GenerateMD5Digest = true,
+				Timeout = int.MaxValue
 			};
 
 			ExecuteAndThrowOnFailure(() =>
