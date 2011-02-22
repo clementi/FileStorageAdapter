@@ -1,4 +1,5 @@
-bin
+Debug
+Release
 *.suo
 *.user
 _ReSharper.*
