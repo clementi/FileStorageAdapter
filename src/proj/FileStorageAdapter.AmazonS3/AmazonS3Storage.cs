@@ -9,6 +9,7 @@ namespace FileStorageAdapter.AmazonS3
 	public class AmazonS3Storage : IStoreFiles, IDisposable
 	{
 		private const string SystemXml = "System.Xml";
+		private const string FileNotFoundErrorMessage = "File not found.";
 		private readonly AmazonS3 client;
 		private readonly string bucketName;
 
@@ -78,7 +79,7 @@ namespace FileStorageAdapter.AmazonS3
 			catch (NullReferenceException e)
 			{
 				if (e.Source == SystemXml)
-					throw BuildException(e);
+					throw new FileNotFoundException(FileNotFoundErrorMessage, e);
 
 				throw;
 			}
@@ -97,7 +98,7 @@ namespace FileStorageAdapter.AmazonS3
 			catch (NullReferenceException e)
 			{
 				if (e.Source == SystemXml)
-					throw BuildException(e);
+					throw new FileNotFoundException(FileNotFoundErrorMessage, e);
 				
 				throw;
 			}
