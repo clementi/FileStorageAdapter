@@ -8,6 +8,7 @@ namespace FileStorageAdapter.AmazonS3
 
 	public class AmazonS3Storage : IStoreFiles, IDisposable
 	{
+		private const string SystemXml = "System.Xml";
 		private readonly AmazonS3 client;
 		private readonly string bucketName;
 
@@ -74,6 +75,13 @@ namespace FileStorageAdapter.AmazonS3
 			{
 				throw BuildException(e);
 			}
+			catch (NullReferenceException e)
+			{
+				if (e.Source == SystemXml)
+					throw BuildException(e);
+
+				throw;
+			}
 		}
 
 		private static T ExecuteAndThrowOnFailure<T>(Func<T> func)
@@ -85,6 +93,13 @@ namespace FileStorageAdapter.AmazonS3
 			catch (AmazonS3Exception e)
 			{
 				throw BuildException(e);
+			}
+			catch (NullReferenceException e)
+			{
+				if (e.Source == SystemXml)
+					throw BuildException(e);
+				
+				throw;
 			}
 		}
 
