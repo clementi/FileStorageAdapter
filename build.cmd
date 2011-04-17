@@ -5,6 +5,8 @@ set PATH=%PATH%;C:\Windows\Microsoft.NET\Framework\v4.0.30319\;bin
 if not exist output ( mkdir output ) else del /q output\*.*
 if exist output\merged ( rd /s /q output\merged )
 
+if "%1" == "clean" ( goto clean )
+
 echo Compiling...
 msbuild /nologo /verbosity:quiet src/FileStorageAdapter.sln /p:Configuration=Release /t:Clean
 msbuild /nologo /verbosity:quiet src/FileStorageAdapter.sln /p:Configuration=Release
