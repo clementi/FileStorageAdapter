@@ -11,28 +11,28 @@ namespace FileStorageAdapter.AmazonS3
 
 	public class AmazonS3Storage : IStoreFiles, IDisposable
 	{
-	    private const string ForwardSlash = "/";
-	    private const string DllExtension = ".dll";
-	    private readonly AmazonS3 client;
+		private const string ForwardSlash = "/";
+		private const string DllExtension = ".dll";
+		private readonly AmazonS3 client;
 		private readonly string bucketName;
 
-        static AmazonS3Storage()
-        {
-            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
-            {
-                var resourceName = new AssemblyName(args.Name) + DllExtension;
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
-                {
-                    var assemblyData = new byte[stream.Length];
-                    stream.Read(assemblyData, 0, assemblyData.Length);
-                    return Assembly.Load(assemblyData);
-                }
-            };
-        }
+		static AmazonS3Storage()
+		{
+			AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+			{
+				var resourceName = new AssemblyName(args.Name) + DllExtension;
+				using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+				{
+					var assemblyData = new byte[stream.Length];
+					stream.Read(assemblyData, 0, assemblyData.Length);
+					return Assembly.Load(assemblyData);
+				}
+			};
+		}
 
 		public AmazonS3Storage(string awsAccessKey, string awsSecretAccessKey, string bucketName)
 		{
-            this.client = AWSClientFactory.CreateAmazonS3Client(awsAccessKey, awsSecretAccessKey);
+			this.client = AWSClientFactory.CreateAmazonS3Client(awsAccessKey, awsSecretAccessKey);
 			this.bucketName = bucketName;
 		}
 
@@ -83,31 +83,31 @@ namespace FileStorageAdapter.AmazonS3
 			});
 		}
 
-        public IEnumerable<string> EnumerateObjects()
-        {
-            return this.EnumerateObjects(string.Empty);
-        }
+		public IEnumerable<string> EnumerateObjects()
+		{
+			return this.EnumerateObjects(string.Empty);
+		}
 
-	    public IEnumerable<string> EnumerateObjects(string location)
-	    {
-            if (location.StartsWith(ForwardSlash))
-                location = location.Substring(1);
+		public IEnumerable<string> EnumerateObjects(string location)
+		{
+			if (location.StartsWith(ForwardSlash))
+				location = location.Substring(1);
 
-	        var request = new ListObjectsRequest
-	        {
-	            BucketName = this.bucketName,
-                Prefix = location,
-                Delimiter = ForwardSlash
-	        };
+			var request = new ListObjectsRequest
+			{
+				BucketName = this.bucketName,
+				Prefix = location,
+				Delimiter = ForwardSlash
+			};
 
-            return ExecuteAndThrowOnFailure(() =>
-            {
-                using (var response = this.client.ListObjects(request))
-                    return response.S3Objects.Select(s3Object => s3Object.Key);
-            });
-	    }
+			return ExecuteAndThrowOnFailure(() =>
+			{
+				using (var response = this.client.ListObjects(request))
+					return response.S3Objects.Select(s3Object => s3Object.Key);
+			});
+		}
 
-	    private static void ExecuteAndThrowOnFailure(Action action)
+		private static void ExecuteAndThrowOnFailure(Action action)
 		{
 			try
 			{
@@ -115,8 +115,8 @@ namespace FileStorageAdapter.AmazonS3
 			}
 			catch (AmazonS3Exception e)
 			{
-                if (e.ErrorCode == AmazonS3ErrorCodes.NoSuchKey)
-                    throw new FileNotFoundException(e.Message, e);
+				if (e.ErrorCode == AmazonS3ErrorCodes.NoSuchKey)
+					throw new FileNotFoundException(e.Message, e);
 
 				throw BuildException(e);
 			}
@@ -130,8 +130,8 @@ namespace FileStorageAdapter.AmazonS3
 			}
 			catch (AmazonS3Exception e)
 			{
-                if (e.ErrorCode == AmazonS3ErrorCodes.NoSuchKey)
-                    throw new FileNotFoundException(e.Message, e);
+				if (e.ErrorCode == AmazonS3ErrorCodes.NoSuchKey)
+					throw new FileNotFoundException(e.Message, e);
 
 				throw BuildException(e);
 			}
