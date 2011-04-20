@@ -57,7 +57,7 @@ namespace FileStorageAdapter.AmazonS3
 			ExecuteAndThrowOnFailure(() =>
 			{
 				using (this.client.PutObject(request))
-                    return 0;
+					return 0;
 			});
 		}
 		public virtual void Delete(string path)
@@ -71,7 +71,7 @@ namespace FileStorageAdapter.AmazonS3
 			ExecuteAndThrowOnFailure(() =>
 			{
 				using (this.client.DeleteObject(request))
-				    return 0;
+					return 0;
 			});
 		}
 
