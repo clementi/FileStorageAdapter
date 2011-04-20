@@ -119,7 +119,7 @@ namespace FileStorageAdapter.AmazonS3
 			}
 			catch (Exception e)
 			{
-				throw new StorageUnavailableException(e.Message, e);
+				throw BuildException(e);
 			}
 		}
 		private static T ExecuteAndThrowOnFailure<T>(Func<T> func)
@@ -141,7 +141,7 @@ namespace FileStorageAdapter.AmazonS3
 			}
 			catch (Exception e)
 			{
-				throw new StorageUnavailableException(e.Message, e);
+				throw BuildException(e);
 			}
 		}
 		private static FileStorageException BuildException(Exception e)
