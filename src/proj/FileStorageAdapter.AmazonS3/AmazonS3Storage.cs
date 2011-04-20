@@ -5,7 +5,6 @@ namespace FileStorageAdapter.AmazonS3
 	using System.IO;
 	using System.Linq;
 	using System.Net;
-	using System.Reflection;
 	using Amazon;
 	using Amazon.S3;
 	using Amazon.S3.Model;
@@ -13,23 +12,8 @@ namespace FileStorageAdapter.AmazonS3
 	public class AmazonS3Storage : IStoreFiles, IDisposable
 	{
 		private const string ForwardSlash = "/";
-		private const string DllExtension = ".dll";
 		private readonly AmazonS3 client;
 		private readonly string bucketName;
-
-		static AmazonS3Storage()
-		{
-			AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
-			{
-				var resourceName = new AssemblyName(args.Name) + DllExtension;
-				using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
-				{
-					var assemblyData = new byte[stream.Length];
-					stream.Read(assemblyData, 0, assemblyData.Length);
-					return Assembly.Load(assemblyData);
-				}
-			};
-		}
 
 		public AmazonS3Storage(string awsAccessKey, string awsSecretAccessKey, string bucketName)
 		{
@@ -37,7 +21,18 @@ namespace FileStorageAdapter.AmazonS3
 			this.bucketName = bucketName;
 		}
 
-		public Stream Get(string path)
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+				this.client.Dispose();
+		}
+
+		public virtual Stream Get(string path)
 		{
 			var request = new GetObjectRequest
 			{
@@ -48,8 +43,7 @@ namespace FileStorageAdapter.AmazonS3
 
 			return ExecuteAndThrowOnFailure(() => new DisposableS3ResponseStream(this.client.GetObject(request)));
 		}
-
-		public void Put(Stream input, string path)
+		public virtual void Put(Stream input, string path)
 		{
 			var request = new PutObjectRequest
 			{
@@ -67,8 +61,7 @@ namespace FileStorageAdapter.AmazonS3
 				}
 			});
 		}
-
-		public void Delete(string path)
+		public virtual void Delete(string path)
 		{
 			var request = new DeleteObjectRequest
 			{
@@ -84,7 +77,7 @@ namespace FileStorageAdapter.AmazonS3
 			});
 		}
 
-		public IEnumerable<string> EnumerateObjects(string location)
+		public virtual IEnumerable<string> EnumerateObjects(string location)
 		{
 			if (location.StartsWith(ForwardSlash))
 				location = location.Substring(1);
@@ -102,8 +95,7 @@ namespace FileStorageAdapter.AmazonS3
 					return response.S3Objects.Select(s3Object => s3Object.Key);
 			});
 		}
-		
-		public bool Exists(string path)
+		public virtual bool Exists(string path)
 		{
 			return this.EnumerateObjects(path).Any();	
 		}
@@ -126,7 +118,6 @@ namespace FileStorageAdapter.AmazonS3
 				throw new StorageUnavailableException(e.Message, e);	
 			}
 		}
-
 		private static T ExecuteAndThrowOnFailure<T>(Func<T> func)
 		{
 			try
@@ -145,22 +136,9 @@ namespace FileStorageAdapter.AmazonS3
 				throw new StorageUnavailableException(e.Message, e);	
 			}
 		}
-
 		private static FileStorageException BuildException(Exception e)
 		{
 			return new FileStorageException(e.Message, e);
-		}
-
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		protected virtual void Dispose(bool disposing)
-		{
-			if (disposing)
-				this.client.Dispose();
 		}
 	}
 }
