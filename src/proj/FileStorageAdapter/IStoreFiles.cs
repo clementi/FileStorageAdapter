@@ -9,5 +9,6 @@ namespace FileStorageAdapter
 		void Put(Stream input, string path);
 		void Delete(string path);
 		IEnumerable<string> EnumerateObjects(string location);
+		bool Exists(string path);
 	}
 }

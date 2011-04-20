@@ -84,11 +84,6 @@ namespace FileStorageAdapter.AmazonS3
 			});
 		}
 
-		public IEnumerable<string> EnumerateObjects()
-		{
-			return this.EnumerateObjects(string.Empty);
-		}
-
 		public IEnumerable<string> EnumerateObjects(string location)
 		{
 			if (location.StartsWith(ForwardSlash))
@@ -106,6 +101,11 @@ namespace FileStorageAdapter.AmazonS3
 				using (var response = this.client.ListObjects(request))
 					return response.S3Objects.Select(s3Object => s3Object.Key);
 			});
+		}
+		
+		public bool Exists(string path)
+		{
+			return this.EnumerateObjects(path).Any();	
 		}
 
 		private static void ExecuteAndThrowOnFailure(Action action)
