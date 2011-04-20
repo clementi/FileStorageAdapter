@@ -97,7 +97,7 @@ namespace FileStorageAdapter.AmazonS3
 		}
 		public virtual bool Exists(string pathOrLocation)
 		{
-		    return this.EnumerateObjects(pathOrLocation).Contains(pathOrLocation);
+			return this.EnumerateObjects(pathOrLocation).Contains(pathOrLocation);
 		}
 
 		private static void ExecuteAndThrowOnFailure(Action action)
@@ -117,6 +117,10 @@ namespace FileStorageAdapter.AmazonS3
 			{
 				throw new StorageUnavailableException(e.Message, e);	
 			}
+			catch (Exception e)
+			{
+				throw new StorageUnavailableException(e.Message, e);
+			}
 		}
 		private static T ExecuteAndThrowOnFailure<T>(Func<T> func)
 		{
@@ -134,6 +138,10 @@ namespace FileStorageAdapter.AmazonS3
 			catch (WebException e)
 			{
 				throw new StorageUnavailableException(e.Message, e);	
+			}
+			catch (Exception e)
+			{
+				throw new StorageUnavailableException(e.Message, e);
 			}
 		}
 		private static FileStorageException BuildException(Exception e)
