@@ -4,6 +4,7 @@ namespace FileStorageAdapter.AmazonS3
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
+	using System.Net;
 	using System.Reflection;
 	using Amazon;
 	using Amazon.S3;
@@ -120,6 +121,10 @@ namespace FileStorageAdapter.AmazonS3
 
 				throw BuildException(e);
 			}
+			catch (WebException e)
+			{
+				throw new StorageUnavailableException(e.Message, e);	
+			}
 		}
 
 		private static T ExecuteAndThrowOnFailure<T>(Func<T> func)
@@ -134,6 +139,10 @@ namespace FileStorageAdapter.AmazonS3
 					throw new FileNotFoundException(e.Message, e);
 
 				throw BuildException(e);
+			}
+			catch (WebException e)
+			{
+				throw new StorageUnavailableException(e.Message, e);	
 			}
 		}
 
