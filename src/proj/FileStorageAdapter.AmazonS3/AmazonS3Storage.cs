@@ -57,8 +57,7 @@ namespace FileStorageAdapter.AmazonS3
 			ExecuteAndThrowOnFailure(() =>
 			{
 				using (this.client.PutObject(request))
-				{
-				}
+                    return 0;
 			});
 		}
 		public virtual void Delete(string path)
@@ -72,8 +71,7 @@ namespace FileStorageAdapter.AmazonS3
 			ExecuteAndThrowOnFailure(() =>
 			{
 				using (this.client.DeleteObject(request))
-				{
-				}
+				    return 0;
 			});
 		}
 
@@ -100,28 +98,6 @@ namespace FileStorageAdapter.AmazonS3
 			return this.EnumerateObjects(pathOrLocation).Contains(pathOrLocation);
 		}
 
-		private static void ExecuteAndThrowOnFailure(Action action)
-		{
-			try
-			{
-				action();
-			}
-			catch (AmazonS3Exception e)
-			{
-				if (e.ErrorCode == AmazonS3ErrorCodes.NoSuchKey)
-					throw new FileNotFoundException(e.Message, e);
-
-				throw BuildException(e);
-			}
-			catch (WebException e)
-			{
-				throw new StorageUnavailableException(e.Message, e);	
-			}
-			catch (Exception e)
-			{
-				throw BuildException(e);
-			}
-		}
 		private static T ExecuteAndThrowOnFailure<T>(Func<T> func)
 		{
 			try
