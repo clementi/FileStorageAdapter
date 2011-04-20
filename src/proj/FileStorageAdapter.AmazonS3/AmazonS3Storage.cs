@@ -95,9 +95,9 @@ namespace FileStorageAdapter.AmazonS3
 					return response.S3Objects.Select(s3Object => s3Object.Key);
 			});
 		}
-		public virtual bool Exists(string path)
+		public virtual bool Exists(string pathOrLocation)
 		{
-			return this.EnumerateObjects(path).Any();	
+		    return this.EnumerateObjects(pathOrLocation).Contains(pathOrLocation);
 		}
 
 		private static void ExecuteAndThrowOnFailure(Action action)
