@@ -95,7 +95,15 @@ namespace FileStorageAdapter.AmazonS3
 		}
 		public virtual bool Exists(string pathOrLocation)
 		{
-			return this.EnumerateObjects(pathOrLocation).Contains(pathOrLocation);
+			try
+			{
+				using (this.Get(pathOrLocation))
+					return true;
+			}
+			catch (FileNotFoundException)
+			{
+				return false;
+			}
 		}
 
 		private static T ExecuteAndThrowOnFailure<T>(Func<T> func)
