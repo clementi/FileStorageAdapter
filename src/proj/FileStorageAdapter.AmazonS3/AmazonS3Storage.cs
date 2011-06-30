@@ -43,6 +43,17 @@ namespace FileStorageAdapter.AmazonS3
 
 			return ExecuteAndThrowOnFailure(() => new DisposableS3ResponseStream(this.client.GetObject(request)));
 		}
+		public virtual string GetPreSignedUrl(string path, DateTime expiration)
+		{
+			var request = new GetPreSignedUrlRequest()
+				.WithKey(path)
+				.WithBucketName(this.bucketName)
+				.WithProtocol(Protocol.HTTP)
+				.WithVerb(HttpVerb.GET)
+				.WithExpires(expiration);
+
+			return this.client.GetPreSignedURL(request);
+		}
 		public virtual void Put(Stream input, string path)
 		{
 			var request = new PutObjectRequest
