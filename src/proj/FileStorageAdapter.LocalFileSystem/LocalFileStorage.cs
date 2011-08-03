@@ -6,31 +6,43 @@ namespace FileStorageAdapter.LocalFileSystem
 
 	public class LocalFileStorage : IStoreFiles
 	{
-		public Stream Get(string path)
+		public virtual Stream Get(string path)
 		{
 			return File.OpenRead(path);
 		}
 
-		public void Put(Stream input, string path)
+		public virtual void Put(Stream input, string path)
 		{
 			using (var output = File.OpenWrite(path))
 				input.CopyTo(output);
 		}
 
-		public void Delete(string path)
+		public virtual void Delete(string path)
 		{
 			if (Directory.Exists(path))
 				Directory.Delete(path, true);
 
-			File.Delete(path);
+			try
+			{
+				File.Delete(path);
+			}
+			catch (DirectoryNotFoundException)
+			{
+				// in case another thread deletes the directory
+			}
 		}
 
-		public IEnumerable<string> EnumerateObjects(string location)
+		public virtual void Rename(string source, string destination)
+		{
+			File.Move(source, destination);
+		}
+
+		public virtual IEnumerable<string> EnumerateObjects(string location)
 		{
 			return Directory.EnumerateFileSystemEntries(location);
 		}
 
-		public bool Exists(string pathOrLocation)
+		public virtual bool Exists(string pathOrLocation)
 		{
 			return File.Exists(pathOrLocation) || Directory.Exists(pathOrLocation);
 		}

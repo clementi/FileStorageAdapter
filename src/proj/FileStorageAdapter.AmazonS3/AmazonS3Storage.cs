@@ -34,12 +34,10 @@ namespace FileStorageAdapter.AmazonS3
 
 		public virtual Stream Get(string path)
 		{
-			var request = new GetObjectRequest
-			{
-				BucketName = this.bucketName,
-				Key = RemotePath.Normalize(path),
-				Timeout = int.MaxValue
-			};
+			var request = new GetObjectRequest()
+				.WithBucketName(this.bucketName)
+				.WithKey(RemotePath.Normalize(path))
+				.WithTimeout(int.MaxValue);
 
 			return ExecuteAndThrowOnFailure(() => new DisposableS3ResponseStream(this.client.GetObject(request)));
 		}
@@ -82,6 +80,27 @@ namespace FileStorageAdapter.AmazonS3
 			ExecuteAndThrowOnFailure(() =>
 			{
 				using (this.client.DeleteObject(request))
+					return 0;
+			});
+		}
+
+		public virtual void Rename(string source, string destination)
+		{
+			var copyRequest = new CopyObjectRequest()
+				.WithSourceBucket(this.bucketName)
+				.WithSourceKey(source)
+				.WithDestinationBucket(this.bucketName)
+				.WithDestinationKey(destination)
+				.WithTimeout(int.MaxValue);
+
+			var deleteRequest = new DeleteObjectRequest()
+				.WithBucketName(this.bucketName)
+				.WithKey(source);
+
+			ExecuteAndThrowOnFailure(() =>
+			{
+				using (this.client.CopyObject(copyRequest))
+				using (this.client.DeleteObject(deleteRequest))
 					return 0;
 			});
 		}
