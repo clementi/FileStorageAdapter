@@ -32,6 +32,84 @@ namespace FileStorageAdapter.AmazonS3
 				this.client.Dispose();
 		}
 
+		public void Download(string remotePath, string localPath)
+		{
+			using (var remote = this.Get(remotePath))
+			using (var local = File.OpenWrite(localPath))
+				remote.CopyTo(local);
+		}
+		public void Upload(string localPath, string remotePath)
+		{
+			using (var local = File.OpenRead(localPath))
+				this.Put(local, remotePath);
+		}
+
+		public virtual bool Exists(string pathOrLocation)
+		{
+			try
+			{
+				using (this.Get(pathOrLocation))
+					return true;
+			}
+			catch (FileNotFoundException)
+			{
+				return false;
+			}
+		}
+		public virtual void Rename(string source, string destination)
+		{
+			var copyRequest = new CopyObjectRequest()
+				.WithSourceBucket(this.bucketName)
+				.WithSourceKey(source)
+				.WithDestinationBucket(this.bucketName)
+				.WithDestinationKey(destination)
+				.WithTimeout(int.MaxValue);
+
+			var deleteRequest = new DeleteObjectRequest()
+				.WithBucketName(this.bucketName)
+				.WithKey(source);
+
+			ExecuteAndThrowOnFailure(() =>
+			{
+				using (this.client.CopyObject(copyRequest))
+				using (this.client.DeleteObject(deleteRequest))
+					return 0;
+			});
+		}
+		public virtual void Delete(string path)
+		{
+			var request = new DeleteObjectRequest
+			{
+				BucketName = this.bucketName,
+				Key = RemotePath.Normalize(path)
+			};
+
+			ExecuteAndThrowOnFailure(() =>
+			{
+				using (this.client.DeleteObject(request))
+					return 0;
+			});
+		}
+		
+		public virtual IEnumerable<string> EnumerateObjects(string location)
+		{
+			if (location.StartsWith(ForwardSlash))
+				location = location.Substring(1);
+
+			var request = new ListObjectsRequest
+			{
+				BucketName = this.bucketName,
+				Prefix = location,
+				Delimiter = ForwardSlash
+			};
+
+			return ExecuteAndThrowOnFailure(() =>
+			{
+				using (var response = this.client.ListObjects(request))
+					return response.S3Objects.Select(s3Object => s3Object.Key);
+			});
+		}
+
 		public virtual Stream Get(string path)
 		{
 			var request = new GetObjectRequest()
@@ -68,72 +146,6 @@ namespace FileStorageAdapter.AmazonS3
 				using (this.client.PutObject(request))
 					return 0;
 			});
-		}
-		public virtual void Delete(string path)
-		{
-			var request = new DeleteObjectRequest
-			{
-				BucketName = this.bucketName,
-				Key = RemotePath.Normalize(path)
-			};
-
-			ExecuteAndThrowOnFailure(() =>
-			{
-				using (this.client.DeleteObject(request))
-					return 0;
-			});
-		}
-
-		public virtual void Rename(string source, string destination)
-		{
-			var copyRequest = new CopyObjectRequest()
-				.WithSourceBucket(this.bucketName)
-				.WithSourceKey(source)
-				.WithDestinationBucket(this.bucketName)
-				.WithDestinationKey(destination)
-				.WithTimeout(int.MaxValue);
-
-			var deleteRequest = new DeleteObjectRequest()
-				.WithBucketName(this.bucketName)
-				.WithKey(source);
-
-			ExecuteAndThrowOnFailure(() =>
-			{
-				using (this.client.CopyObject(copyRequest))
-				using (this.client.DeleteObject(deleteRequest))
-					return 0;
-			});
-		}
-
-		public virtual IEnumerable<string> EnumerateObjects(string location)
-		{
-			if (location.StartsWith(ForwardSlash))
-				location = location.Substring(1);
-
-			var request = new ListObjectsRequest
-			{
-				BucketName = this.bucketName,
-				Prefix = location,
-				Delimiter = ForwardSlash
-			};
-
-			return ExecuteAndThrowOnFailure(() =>
-			{
-				using (var response = this.client.ListObjects(request))
-					return response.S3Objects.Select(s3Object => s3Object.Key);
-			});
-		}
-		public virtual bool Exists(string pathOrLocation)
-		{
-			try
-			{
-				using (this.Get(pathOrLocation))
-					return true;
-			}
-			catch (FileNotFoundException)
-			{
-				return false;
-			}
 		}
 
 		private static T ExecuteAndThrowOnFailure<T>(Func<T> func)

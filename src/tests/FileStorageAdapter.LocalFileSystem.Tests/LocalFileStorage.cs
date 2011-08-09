@@ -231,6 +231,60 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 		};
 	}
 
+	[Subject(typeof(LocalFileStorage))]
+	public class when_downloading_a_file : using_the_local_file_storage_adapter
+	{
+		static readonly string Local = Path.Combine("./", Path.GetFileName(First));
+
+		Establish context = () =>
+		{
+			File.Delete(Local);
+			File.Delete(First);
+			File.AppendAllText(First, Contents);
+		};
+
+		Because of = () =>
+			Storage.Download(First, Local);
+
+		It should_download_the_file_to_the_local_location = () =>
+		{
+			File.Exists(Local).ShouldBeTrue();
+			File.ReadAllText(Local).ShouldEqual(Contents);
+		};
+
+		It should_keep_the_file_at_the_remote_location = () =>
+			File.Exists(First).ShouldBeTrue();
+	}
+
+	[Subject(typeof(LocalFileStorage))]
+	public class when_uploading_a_file : using_the_local_file_storage_adapter
+	{
+		static readonly string Local = Path.Combine("./", Path.GetFileName(First));
+
+		Establish context = () =>
+		{
+			File.Delete(Local);
+			File.Delete(First);
+			File.AppendAllText(Local, Contents);
+		};
+
+		Because of = () =>
+		{
+			Storage.Upload(Local, First);
+		};
+
+		It should_place_the_file_in_the_remote_location = () =>
+		{
+			File.Exists(First).ShouldBeTrue();
+			File.ReadAllText(First).ShouldEqual(Contents);
+		};
+
+		It should_keep_a_copy_of_the_file_in_the_local_location = () =>
+		{
+			File.Exists(Local).ShouldBeTrue();
+		};
+	}
+
 	public abstract class using_the_local_file_storage_adapter
 	{
 		protected const string Contents = "This is a test";

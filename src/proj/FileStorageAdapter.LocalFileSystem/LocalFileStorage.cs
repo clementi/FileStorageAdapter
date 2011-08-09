@@ -1,22 +1,27 @@
 namespace FileStorageAdapter.LocalFileSystem
 {
-	using System;
 	using System.Collections.Generic;
 	using System.IO;
 
 	public class LocalFileStorage : IStoreFiles
 	{
-		public virtual Stream Get(string path)
+		public void Download(string remotePath, string localPath)
 		{
-			return File.OpenRead(path);
+			File.Copy(remotePath, localPath);
 		}
-
-		public virtual void Put(Stream input, string path)
+		public void Upload(string localPath, string remotePath)
 		{
-			using (var output = File.OpenWrite(path))
-				input.CopyTo(output);
+			File.Copy(localPath, remotePath);
 		}
-
+		
+		public virtual bool Exists(string pathOrLocation)
+		{
+			return File.Exists(pathOrLocation) || Directory.Exists(pathOrLocation);
+		}
+		public virtual void Rename(string source, string destination)
+		{
+			File.Move(source, destination);
+		}
 		public virtual void Delete(string path)
 		{
 			if (Directory.Exists(path))
@@ -31,20 +36,20 @@ namespace FileStorageAdapter.LocalFileSystem
 				// in case another thread deletes the directory
 			}
 		}
-
-		public virtual void Rename(string source, string destination)
-		{
-			File.Move(source, destination);
-		}
-
+		
 		public virtual IEnumerable<string> EnumerateObjects(string location)
 		{
 			return Directory.EnumerateFileSystemEntries(location);
 		}
-
-		public virtual bool Exists(string pathOrLocation)
+		
+		public virtual Stream Get(string path)
 		{
-			return File.Exists(pathOrLocation) || Directory.Exists(pathOrLocation);
+			return File.OpenRead(path);
+		}
+		public virtual void Put(Stream input, string path)
+		{
+			using (var output = File.OpenWrite(path))
+				input.CopyTo(output);
 		}
 	}
 }
