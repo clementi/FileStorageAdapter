@@ -35,7 +35,7 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 		static Stream stream;
 
 		Establish context = () =>
-			File.AppendAllText(First, Contents);
+			File.AppendAllText(Path.Combine(TempPath, First), Contents);
 
 		Because of = () =>
 			stream = Storage.Get(First);
@@ -52,19 +52,25 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 	[Subject(typeof(LocalFileStorage))]
 	public class when_putting_a_file : using_the_local_file_storage_adapter
 	{
-		Establish context = () => 
-			File.AppendAllText(First, Contents);
+		private static readonly string Local = First;
+		private static readonly string Remote = Path.Combine(TempPath, Second);
+
+		Establish context = () =>
+		{
+			File.Delete(Local);
+			File.AppendAllText(Local, Contents);
+		};
 
 		Because of = () =>
 		{
-			using (var first = File.OpenRead(First))
-				Storage.Put(first, Second);
+			using (var first = File.OpenRead(Local))
+				Storage.Put(first, Remote);
 		};
 
 		It should_deposit_the_entire_file_at_the_specified_location = () =>
 		{
-			File.Exists(Second).ShouldBeTrue();
-			File.ReadAllText(Second).ShouldEqual(Contents);
+			File.Exists(Remote).ShouldBeTrue();
+			File.ReadAllText(Remote).ShouldEqual(Contents);
 		};
 	}
 
@@ -73,31 +79,31 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 	{
 		Establish context = () =>
 		{
-			File.AppendAllText(First, Contents + "New");
-			File.AppendAllText(Second, Contents);
+			File.AppendAllText(Path.Combine(TempPath, First), Contents + "New");
+			File.AppendAllText(Path.Combine(TempPath, Second), Contents);
 		};
 
 		Because of = () =>
 		{
-			using (var first = File.OpenRead(First))
+			using (var first = File.OpenRead(Path.Combine(TempPath, First)))
 				Storage.Put(first, Second);
 		};
 
 		It should_overwrite_the_old_file_with_the_new_one = () =>
-			File.ReadAllText(Second).ShouldEqual(Contents + "New");
+			File.ReadAllText(Path.Combine(TempPath, Second)).ShouldEqual(Contents + "New");
 	}
 
 	[Subject(typeof(LocalFileStorage))]
 	public class when_deleting_a_nonexistent_file : using_the_local_file_storage_adapter
 	{
 		Establish context = () =>
-			File.Exists(First).ShouldBeFalse();
+			File.Exists(Path.Combine(TempPath, First)).ShouldBeFalse();
 			
 		Because of = () =>
 			Storage.Delete(First);
 
 		It should_do_nothing_and_not_report_any_error = () =>
-			File.Exists(First).ShouldBeFalse();
+			File.Exists(Path.Combine(TempPath, First)).ShouldBeFalse();
 	}
 
 	[Subject(typeof(LocalFileStorage))]
@@ -105,15 +111,15 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 	{
 		Establish context = () =>
 		{
-			File.AppendAllText(First, Contents);
-			File.Exists(First).ShouldBeTrue();
+			File.AppendAllText(Path.Combine(TempPath, First), Contents);
+			File.Exists(Path.Combine(TempPath, First)).ShouldBeTrue();
 		};
 
 		Because of = () =>
 			Storage.Delete(First);
 		
 		It should_delete_the_file = () =>
-			File.Exists(First).ShouldBeFalse();
+			File.Exists(Path.Combine(TempPath, First)).ShouldBeFalse();
 	}
 
 	[Subject(typeof(LocalFileStorage))]
@@ -150,27 +156,20 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 	public class when_checking_for_a_nonexistent_file : using_the_local_file_storage_adapter
 	{
 		Establish context = () =>
-			File.Exists(First).ShouldBeFalse();
+			File.Exists(Path.Combine(TempPath, First)).ShouldBeFalse();
 
 		It should_report_that_it_does_not_exist = () =>
-			Storage.Exists(First).ShouldBeFalse();
+			Storage.Exists(Path.Combine(TempPath, First)).ShouldBeFalse();
 	}
 
 	[Subject(typeof(LocalFileStorage))]
 	public class when_checking_for_an_existing_file : using_the_local_file_storage_adapter
 	{
 		Establish context = () =>
-			File.AppendAllText(First, Contents);
+			File.AppendAllText(Path.Combine(TempPath, First), Contents);
 
 		It should_report_that_it_does_exist = () =>
-			Storage.Exists(First).ShouldBeTrue();
-	}
-
-	[Subject(typeof(LocalFileStorage))]
-	public class when_checking_for_an_existing_directory : using_the_local_file_storage_adapter
-	{
-		It should_report_that_it_does_not_exist = () =>
-			Storage.Exists(TempPath).ShouldBeTrue();
+			Storage.Exists(Path.Combine(TempPath, First)).ShouldBeTrue();
 	}
 
 	[Subject(typeof(LocalFileStorage))]
@@ -184,16 +183,16 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 	public class when_renaming_a_file : using_the_local_file_storage_adapter
 	{
 		Establish context = () =>
-			File.AppendAllText(First, Contents);
+			File.AppendAllText(Path.Combine(TempPath, First), Contents);
 
 		Because of = () =>
 			Storage.Rename(First, Second);
 
 		It should_delete_the_original_location = () =>
-			Storage.Exists(First).ShouldBeFalse();
+			File.Exists(Path.Combine(TempPath, First)).ShouldBeFalse();
 
 		It should_exist_in_the_new_location = () =>
-			Storage.Exists(Second).ShouldBeTrue();
+			File.Exists(Path.Combine(TempPath, Second)).ShouldBeTrue();
 	}
 
 	[Subject(typeof(LocalFileStorage))]
@@ -214,18 +213,18 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 
 		Establish context = () =>
 		{
-			File.AppendAllText(First, Contents);
-			File.AppendAllText(Second, Contents);
+			File.AppendAllText(Path.Combine(TempPath, First), Contents);
+			File.AppendAllText(Path.Combine(TempPath, Second), Contents);
 			Directory.CreateDirectory(InnerTempPath);
 		};
 
 		Because of = () =>
-			actual = Storage.EnumerateObjects(TempPath);
+			actual = Storage.EnumerateObjects("");
 
 		It should_return_all_entries = () =>
 		{
 			foreach (var thing in Expected)
-				actual.ShouldContain(thing);
+				actual.ShouldContain(Path.Combine(TempPath, thing));
 
 			actual.Count().ShouldEqual(Expected.Count());
 		};
@@ -234,17 +233,17 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 	[Subject(typeof(LocalFileStorage))]
 	public class when_downloading_a_file : using_the_local_file_storage_adapter
 	{
-		static readonly string Local = Path.Combine("./", Path.GetFileName(First));
+		static readonly string Local = Path.Combine("./", First);
 
 		Establish context = () =>
 		{
 			File.Delete(Local);
-			File.Delete(First);
-			File.AppendAllText(First, Contents);
+			File.Delete(Path.Combine(TempPath, First));
+			File.AppendAllText(Path.Combine(TempPath, First), Contents);
 		};
 
 		Because of = () =>
-			Storage.Download(First, Local);
+			Storage.Download(Path.Combine(TempPath, First), Local);
 
 		It should_download_the_file_to_the_local_location = () =>
 		{
@@ -253,7 +252,7 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 		};
 
 		It should_keep_the_file_at_the_remote_location = () =>
-			File.Exists(First).ShouldBeTrue();
+			File.Exists(Path.Combine(TempPath, First)).ShouldBeTrue();
 	}
 
 	[Subject(typeof(LocalFileStorage))]
@@ -269,9 +268,7 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 		};
 
 		Because of = () =>
-		{
 			Storage.Upload(Local, First);
-		};
 
 		It should_place_the_file_in_the_remote_location = () =>
 		{
@@ -280,27 +277,29 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 		};
 
 		It should_keep_a_copy_of_the_file_in_the_local_location = () =>
-		{
 			File.Exists(Local).ShouldBeTrue();
-		};
 	}
 
 	public abstract class using_the_local_file_storage_adapter
 	{
 		protected const string Contents = "This is a test";
 		protected static readonly string TempPath = Path.Combine(Path.GetTempPath(), "LocalFileStorage");
-		protected static readonly string First = Path.Combine(TempPath, "first.txt");
-		protected static readonly string Second = Path.Combine(TempPath, "second.txt");
+		protected static readonly string First = "first.txt";
+		protected static readonly string Second = "second.txt";
 		protected static readonly string InnerTempPath = Path.Combine(TempPath, "inner");
 		protected static readonly string Third = Path.Combine(InnerTempPath, "third");
-		protected static readonly LocalFileStorage Storage = new LocalFileStorage();
+		protected static readonly LocalFileStorage Storage = new LocalFileStorage(TempPath);
 		protected static Exception exception;
-		
-		Establish context = () =>
-			Directory.CreateDirectory(TempPath);
 
-		Cleanup after = () =>
-			Directory.Delete(TempPath, true);
+		Establish context = () =>
+		{
+			if (Directory.Exists(TempPath))
+				Directory.Delete(TempPath, true);
+			Directory.CreateDirectory(TempPath);
+		};
+		
+		//Cleanup after = () =>
+		//    Directory.Delete(TempPath, true);
 	}
 }
 
