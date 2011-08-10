@@ -5,6 +5,7 @@ namespace FileStorageAdapter.LocalFileSystem
 
 	public class LocalFileStorage : IStoreFiles
 	{
+		private const string LocalUrlTemplate = "file:///{0}";
 		private readonly string remoteLocationPrefix;
 
 		public LocalFileStorage(string remoteLocationPrefix)
@@ -15,11 +16,10 @@ namespace FileStorageAdapter.LocalFileSystem
 			this.remoteLocationPrefix = remoteLocationPrefix;
 		}
 
-		private string Prefix(string path)
+		public string GetDownloadUrl(string path)
 		{
-			return Path.Combine(this.remoteLocationPrefix, path);
+			return string.Format(LocalUrlTemplate, this.Prefix(path));
 		}
-
 		public void Download(string remotePath, string localPath)
 		{
 			File.Copy(this.Prefix(remotePath), localPath);
@@ -68,6 +68,14 @@ namespace FileStorageAdapter.LocalFileSystem
 		{
 			using (var output = File.OpenWrite(this.Prefix(path)))
 				input.CopyTo(output);
+		}
+
+		private string Prefix(string path)
+		{
+			if (path.StartsWith("/") || path.StartsWith("\\"))
+				path = path.Substring(1);
+
+			return Path.Combine(this.remoteLocationPrefix, path);
 		}
 	}
 }

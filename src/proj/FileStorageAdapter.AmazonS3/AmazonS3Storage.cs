@@ -14,11 +14,15 @@ namespace FileStorageAdapter.AmazonS3
 		private const string ForwardSlash = "/";
 		private readonly AmazonS3 client;
 		private readonly string bucketName;
+		private static readonly TimeSpan DefaultUrlValidity = TimeSpan.FromSeconds(30);
+
+		public TimeSpan UrlValidity { get; set; }
 
 		public AmazonS3Storage(string awsAccessKey, string awsSecretAccessKey, string bucketName)
 		{
 			this.client = AWSClientFactory.CreateAmazonS3Client(awsAccessKey, awsSecretAccessKey);
 			this.bucketName = bucketName;
+			this.UrlValidity = DefaultUrlValidity;
 		}
 
 		public void Dispose()
@@ -32,6 +36,17 @@ namespace FileStorageAdapter.AmazonS3
 				this.client.Dispose();
 		}
 
+		public string GetDownloadUrl(string path)
+		{
+			var request = new GetPreSignedUrlRequest()
+				.WithKey(path)
+				.WithProtocol(Protocol.HTTPS)
+				.WithBucketName(this.bucketName)
+				.WithExpires(DateTime.UtcNow.Add(this.UrlValidity))
+				.WithVerb(HttpVerb.GET);
+
+			return this.client.GetPreSignedURL(request);
+		}
 		public void Download(string remotePath, string localPath)
 		{
 			using (var remote = this.Get(remotePath))
@@ -118,17 +133,6 @@ namespace FileStorageAdapter.AmazonS3
 				.WithTimeout(int.MaxValue);
 
 			return ExecuteAndThrowOnFailure(() => new DisposableS3ResponseStream(this.client.GetObject(request)));
-		}
-		public virtual string GetPreSignedUrl(string path, DateTime expiration)
-		{
-			var request = new GetPreSignedUrlRequest()
-				.WithKey(path)
-				.WithBucketName(this.bucketName)
-				.WithProtocol(Protocol.HTTP)
-				.WithVerb(HttpVerb.GET)
-				.WithExpires(expiration);
-
-			return this.client.GetPreSignedURL(request);
 		}
 		public virtual void Put(Stream input, string path)
 		{

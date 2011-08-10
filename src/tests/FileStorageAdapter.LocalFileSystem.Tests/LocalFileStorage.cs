@@ -280,6 +280,22 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 			File.Exists(Local).ShouldBeTrue();
 	}
 
+	[Subject(typeof(LocalFileStorage))]
+	public class when_retreiving_the_download_url : using_the_local_file_storage_adapter
+	{
+		static string result;
+
+		Because of = () =>
+			result = Storage.GetDownloadUrl("path");
+
+		It should_provide_a_well_formed_local_url = () =>
+		{
+			result.ShouldStartWith("file:///");
+			result.ShouldEndWith("path");
+			result.ShouldContain(TempPath);
+		};
+	}
+
 	public abstract class using_the_local_file_storage_adapter
 	{
 		protected const string Contents = "This is a test";
@@ -297,9 +313,6 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 				Directory.Delete(TempPath, true);
 			Directory.CreateDirectory(TempPath);
 		};
-		
-		//Cleanup after = () =>
-		//    Directory.Delete(TempPath, true);
 	}
 }
 
