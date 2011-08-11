@@ -15,8 +15,8 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 		Because of = () =>
 			exception = Catch.Exception(() => Storage.Get("C:/Does/Not/Exist.txt"));
 
-		It should_throw_an_exception = () => 
-			exception.ShouldBeOfType<DirectoryNotFoundException>();
+		It should_throw_a_file_not_found_exception = () => 
+			exception.ShouldBeOfType<FileNotFoundException>();
 	}
 
 	[Subject(typeof(LocalFileStorage))]
