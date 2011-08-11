@@ -11,10 +11,21 @@ namespace FileStorageAdapter.LocalFileSystem
 
 		public LocalFileStorage(string remoteLocationPrefix)
 		{
-			if (!Directory.Exists(remoteLocationPrefix))
-				Directory.CreateDirectory(remoteLocationPrefix);
+			EnsureDirectory(remoteLocationPrefix);
 
 			this.remoteLocationPrefix = remoteLocationPrefix;
+		}
+		private static void EnsureDirectory(string path)
+		{
+			if (string.IsNullOrEmpty(path))
+				return;
+
+			var directory = Path.GetDirectoryName(path);
+			if (string.IsNullOrEmpty(directory))
+				return;
+
+			if (!Directory.Exists(directory))
+				Directory.CreateDirectory(directory);
 		}
 
 		public string GetDownloadUrl(string path)
@@ -23,6 +34,8 @@ namespace FileStorageAdapter.LocalFileSystem
 		}
 		public void Download(string remotePath, string localPath)
 		{
+			EnsureDirectory(localPath);
+
 			try
 			{
 				File.Copy(this.Prefix(remotePath), localPath);
@@ -34,7 +47,10 @@ namespace FileStorageAdapter.LocalFileSystem
 		}
 		public void Upload(string localPath, string remotePath)
 		{
-			File.Copy(localPath, this.Prefix(remotePath));
+			var destination = this.Prefix(remotePath);
+			EnsureDirectory(destination);
+
+			File.Copy(localPath, destination);
 		}
 		
 		public virtual bool Exists(string pathOrLocation)
@@ -44,7 +60,9 @@ namespace FileStorageAdapter.LocalFileSystem
 		}
 		public virtual void Rename(string source, string destination)
 		{
-			File.Move(this.Prefix(source), this.Prefix(destination));
+			destination = this.Prefix(destination);
+			EnsureDirectory(destination);
+			File.Move(this.Prefix(source), destination);
 		}
 		public virtual void Delete(string path)
 		{
@@ -81,7 +99,10 @@ namespace FileStorageAdapter.LocalFileSystem
 		}
 		public virtual void Put(Stream input, string path)
 		{
-			using (var output = File.OpenWrite(this.Prefix(path)))
+			var destination = this.Prefix(path);
+			EnsureDirectory(destination);
+
+			using (var output = File.OpenWrite(destination))
 				input.CopyTo(output);
 		}
 
