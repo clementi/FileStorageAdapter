@@ -38,7 +38,7 @@ namespace FileStorageAdapter.LocalFileSystem
 
 			try
 			{
-				File.Copy(this.Prefix(remotePath), localPath);
+				File.Copy(this.Prefix(remotePath), localPath, true);
 			}
 			catch (DirectoryNotFoundException e)
 			{
@@ -50,7 +50,7 @@ namespace FileStorageAdapter.LocalFileSystem
 			var destination = this.Prefix(remotePath);
 			EnsureDirectory(destination);
 
-			File.Copy(localPath, destination);
+			File.Copy(localPath, destination, true);
 		}
 		
 		public virtual bool Exists(string pathOrLocation)
