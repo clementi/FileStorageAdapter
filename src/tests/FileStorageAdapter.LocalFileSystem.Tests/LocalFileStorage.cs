@@ -219,7 +219,7 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 		};
 
 		Because of = () =>
-			actual = Storage.EnumerateObjects("");
+			actual = Storage.EnumerateObjects(string.Empty);
 
 		It should_return_all_entries = () =>
 		{

@@ -1,5 +1,6 @@
 namespace FileStorageAdapter.LocalFileSystem
 {
+	using System;
 	using System.Collections.Generic;
 	using System.IO;
 
@@ -22,7 +23,14 @@ namespace FileStorageAdapter.LocalFileSystem
 		}
 		public void Download(string remotePath, string localPath)
 		{
-			File.Copy(this.Prefix(remotePath), localPath);
+			try
+			{
+				File.Copy(this.Prefix(remotePath), localPath);
+			}
+			catch (DirectoryNotFoundException e)
+			{
+				throw new FileNotFoundException(e.Message, Path.GetFileName(remotePath), e);
+			}
 		}
 		public void Upload(string localPath, string remotePath)
 		{
@@ -62,7 +70,14 @@ namespace FileStorageAdapter.LocalFileSystem
 		
 		public virtual Stream Get(string path)
 		{
-			return File.OpenRead(this.Prefix(path));
+			try
+			{
+				return File.OpenRead(this.Prefix(path));
+			}
+			catch (DirectoryNotFoundException e)
+			{
+				throw new FileNotFoundException(e.Message, Path.GetFileName(path), e);
+			}
 		}
 		public virtual void Put(Stream input, string path)
 		{
