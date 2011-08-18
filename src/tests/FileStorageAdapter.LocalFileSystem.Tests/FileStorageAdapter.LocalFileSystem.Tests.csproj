@@ -38,6 +38,7 @@
     <Reference Include="Machine.Specifications">
       <HintPath>..\..\..\lib\machine.specifications\0.3.0.0\Machine.Specifications.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\proj\FileStorageAdapter.LocalFileSystem\FileStorageAdapter.LocalFileSystem.csproj">

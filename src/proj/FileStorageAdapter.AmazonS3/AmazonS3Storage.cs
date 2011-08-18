@@ -14,8 +14,9 @@ namespace FileStorageAdapter.AmazonS3
 		private const string ForwardSlash = "/";
 		private readonly AmazonS3 client;
 		private readonly string bucketName;
+		private const string DownloadUrlTemplate = "{0}.s3.amazonaws.com";
 		private static readonly TimeSpan DefaultUrlValidity = TimeSpan.FromSeconds(30);
-
+		
 		public TimeSpan UrlValidity { get; set; }
 
 		public AmazonS3Storage(string awsAccessKey, string awsSecretAccessKey, string bucketName)
@@ -61,6 +62,9 @@ namespace FileStorageAdapter.AmazonS3
 
 		public virtual bool Exists(string pathOrLocation)
 		{
+			if (IsDownloadUrl(pathOrLocation))
+				pathOrLocation = ExtractPathFromUrl(pathOrLocation);
+
 			try
 			{
 				using (this.Get(pathOrLocation))
@@ -70,6 +74,18 @@ namespace FileStorageAdapter.AmazonS3
 			{
 				return false;
 			}
+		}
+		private bool IsDownloadUrl(string pathOrLocation)
+		{
+			return pathOrLocation.ToLower().Contains(string.Format(DownloadUrlTemplate, this.bucketName));
+		}
+		private static string ExtractPathFromUrl(string pathOrLocation)
+		{
+			pathOrLocation = new Uri(pathOrLocation).AbsolutePath;
+			if (pathOrLocation.StartsWith("//"))
+				pathOrLocation = pathOrLocation.Substring(1);
+
+			return pathOrLocation;
 		}
 		public virtual void Rename(string source, string destination)
 		{

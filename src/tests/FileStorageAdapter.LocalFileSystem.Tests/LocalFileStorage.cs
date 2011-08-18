@@ -296,6 +296,25 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 		};
 	}
 
+	[Subject(typeof(LocalFileStorage))]
+	public class when_using_the_download_url_to_check_for_an_existing_file : using_the_local_file_storage_adapter
+	{
+		private static string url;
+		private static bool result;
+
+		Establish context = () =>
+		{
+			File.AppendAllText(Path.Combine(TempPath, First), Contents);
+			url = Storage.GetDownloadUrl(Path.Combine(TempPath, First));
+		};
+
+		Because of = () =>
+			result = Storage.Exists(url);
+
+		It should_show_that_it_exists = () =>
+			result.ShouldBeTrue();
+	}
+
 	public abstract class using_the_local_file_storage_adapter
 	{
 		protected const string Contents = "This is a test";

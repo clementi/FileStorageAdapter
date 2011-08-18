@@ -1,12 +1,11 @@
 namespace FileStorageAdapter.LocalFileSystem
 {
-	using System;
 	using System.Collections.Generic;
 	using System.IO;
 
 	public class LocalFileStorage : IStoreFiles
 	{
-		private const string LocalUrlTemplate = "file:///{0}";
+		private const string DownloadUrlPrefix = "file:///";
 		private readonly string remoteLocationPrefix;
 
 		public LocalFileStorage(string remoteLocationPrefix)
@@ -30,7 +29,7 @@ namespace FileStorageAdapter.LocalFileSystem
 
 		public string GetDownloadUrl(string path)
 		{
-			return string.Format(LocalUrlTemplate, this.Prefix(path));
+			return DownloadUrlPrefix + this.Prefix(path);
 		}
 		public void Download(string remotePath, string localPath)
 		{
@@ -55,6 +54,7 @@ namespace FileStorageAdapter.LocalFileSystem
 		
 		public virtual bool Exists(string pathOrLocation)
 		{
+			pathOrLocation = pathOrLocation.Replace(DownloadUrlPrefix, string.Empty);
 			pathOrLocation = this.Prefix(pathOrLocation);
 			return File.Exists(pathOrLocation) || Directory.Exists(pathOrLocation);
 		}
