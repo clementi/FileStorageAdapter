@@ -6,6 +6,7 @@ namespace FileStorageAdapter
 	public interface IStoreFiles
 	{
 		string GetDownloadUrl(string path);
+		string GetDownloadUrl(string path, string fileName);
 		void Download(string remotePath, string localPath);
 		void Upload(string localPath, string remotePath);
 

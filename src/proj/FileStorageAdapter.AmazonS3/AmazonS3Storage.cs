@@ -39,14 +39,24 @@ namespace FileStorageAdapter.AmazonS3
 
 		public string GetDownloadUrl(string path)
 		{
-			var request = new GetPreSignedUrlRequest()
+			var request = this.GetPreSignedUrlRequest(path);
+			return this.client.GetPreSignedURL(request);
+		}
+		public string GetDownloadUrl(string path, string fileName)
+		{
+			var request = this.GetPreSignedUrlRequest(path);
+			request.AddHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+			return this.client.GetPreSignedURL(request);
+		}
+		private GetPreSignedUrlRequest GetPreSignedUrlRequest(string path)
+		{
+			return new GetPreSignedUrlRequest()
 				.WithKey(path)
 				.WithProtocol(Protocol.HTTPS)
 				.WithBucketName(this.bucketName)
 				.WithExpires(DateTime.UtcNow.Add(this.UrlValidity))
 				.WithVerb(HttpVerb.GET);
-
-			return this.client.GetPreSignedURL(request);
 		}
 		public void Download(string remotePath, string localPath)
 		{

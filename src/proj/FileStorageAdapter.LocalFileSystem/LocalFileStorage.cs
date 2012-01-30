@@ -31,6 +31,11 @@ namespace FileStorageAdapter.LocalFileSystem
 		{
 			return DownloadUrlPrefix + this.Prefix(path);
 		}
+		public string GetDownloadUrl(string path, string fileName)
+		{
+			return GetDownloadUrl(path);
+		}
+
 		public void Download(string remotePath, string localPath)
 		{
 			EnsureDirectory(localPath);
