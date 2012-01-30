@@ -44,8 +44,12 @@ namespace FileStorageAdapter.AmazonS3
 		}
 		public string GetDownloadUrl(string path, string fileName)
 		{
-			var request = this.GetPreSignedUrlRequest(path);
-			request.AddHeader("Content-Disposition", "attachment; filename=" + fileName);
+			var overrides = new ResponseHeaderOverrides
+			{
+				ContentDisposition = "attachment; filename=" + fileName
+			};
+			var request = this.GetPreSignedUrlRequest(path)
+				.WithResponseHeaderOverrides(overrides);
 
 			return this.client.GetPreSignedURL(request);
 		}
@@ -58,6 +62,7 @@ namespace FileStorageAdapter.AmazonS3
 				.WithExpires(DateTime.UtcNow.Add(this.UrlValidity))
 				.WithVerb(HttpVerb.GET);
 		}
+
 		public void Download(string remotePath, string localPath)
 		{
 			using (var remote = this.Get(remotePath))
