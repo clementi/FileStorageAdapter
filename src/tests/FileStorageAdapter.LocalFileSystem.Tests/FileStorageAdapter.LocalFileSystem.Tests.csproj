@@ -35,8 +35,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Machine.Specifications">
-      <HintPath>..\..\..\lib\machine.specifications\0.3.0.0\Machine.Specifications.dll</HintPath>
+    <Reference Include="Machine.Specifications, Version=0.3.0.0, Culture=neutral, PublicKeyToken=5c474de7a495cff1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>R:\3rd-party\machine.specifications\0.5.0.0\Machine.Specifications.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
