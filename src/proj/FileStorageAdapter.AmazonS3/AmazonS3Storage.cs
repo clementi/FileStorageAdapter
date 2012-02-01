@@ -5,6 +5,7 @@ namespace FileStorageAdapter.AmazonS3
 	using System.IO;
 	using System.Linq;
 	using System.Net;
+	using System.Web;
 	using Amazon;
 	using Amazon.S3;
 	using Amazon.S3.Model;
@@ -44,10 +45,8 @@ namespace FileStorageAdapter.AmazonS3
 		}
 		public string GetDownloadUrl(string path, string fileName)
 		{
-			var overrides = new ResponseHeaderOverrides
-			{
-				ContentDisposition = "attachment; filename=" + fileName
-			};
+			var contentDisposition = string.Format("attachment;filename=\"{0}\"", fileName);
+			var overrides = new ResponseHeaderOverrides { ContentDisposition = contentDisposition };
 			var request = this.GetPreSignedUrlRequest(path)
 				.WithResponseHeaderOverrides(overrides);
 
