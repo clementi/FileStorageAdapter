@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorageAdapter.LocalFil
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorageAdapter.LocalFileSystem.Tests", "tests\FileStorageAdapter.LocalFileSystem.Tests\FileStorageAdapter.LocalFileSystem.Tests.csproj", "{B86E149E-8296-48E8-8645-9EDCBF26E577}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileStorageAdapter.AmazonS3.Tests", "tests\FileStorageAdapter.AmazonS3.Tests\FileStorageAdapter.AmazonS3.Tests.csproj", "{7072FE1A-AFE6-4EAC-9898-389591E2F586}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{B86E149E-8296-48E8-8645-9EDCBF26E577}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B86E149E-8296-48E8-8645-9EDCBF26E577}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B86E149E-8296-48E8-8645-9EDCBF26E577}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7072FE1A-AFE6-4EAC-9898-389591E2F586}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7072FE1A-AFE6-4EAC-9898-389591E2F586}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7072FE1A-AFE6-4EAC-9898-389591E2F586}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7072FE1A-AFE6-4EAC-9898-389591E2F586}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -44,5 +50,6 @@ Global
 		{6907CC8F-BBE6-4131-8C1B-BA468BD516B5} = {B391D8A3-7309-4DF0-9B1A-DE3554E9374A}
 		{FE23A9E5-2C3E-4864-8A3F-9ACE9024F9C6} = {B391D8A3-7309-4DF0-9B1A-DE3554E9374A}
 		{B86E149E-8296-48E8-8645-9EDCBF26E577} = {D36E996D-944D-48EC-8C9A-7440222B68BE}
+		{7072FE1A-AFE6-4EAC-9898-389591E2F586} = {D36E996D-944D-48EC-8C9A-7440222B68BE}
 	EndGlobalSection
 EndGlobal

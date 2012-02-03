@@ -1,79 +1,35 @@
-namespace FileStorageAdapter.AmazonS3
+﻿namespace FileStorageAdapter.AmazonS3
 {
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
-	using System.Linq;
 	using System.Net;
-	using System.Web;
-	using Amazon;
 	using Amazon.S3;
-	using Amazon.S3.Model;
 
 	public class AmazonS3Storage : IStoreFiles, IDisposable
 	{
-		private const string ForwardSlash = "/";
-		private readonly AmazonS3 client;
-		private readonly string bucketName;
-		private const string DownloadUrlTemplate = "{0}.s3.amazonaws.com";
-		private static readonly TimeSpan DefaultUrlValidity = TimeSpan.FromSeconds(30);
-		
-		public TimeSpan UrlValidity { get; set; }
-
-		public AmazonS3Storage(string awsAccessKey, string awsSecretAccessKey, string bucketName)
-		{
-			this.client = AWSClientFactory.CreateAmazonS3Client(awsAccessKey, awsSecretAccessKey);
-			this.bucketName = bucketName;
-			this.UrlValidity = DefaultUrlValidity;
-		}
-
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected virtual void Dispose(bool disposing)
-		{
-			if (disposing)
-				this.client.Dispose();
-		}
-
 		public string GetDownloadUrl(string path)
 		{
-			var request = this.GetPreSignedUrlRequest(path);
-			return this.client.GetPreSignedURL(request);
+			var request = this.factory.PreSignedUrl(path, DateTime.UtcNow + this.UrlValidity);
+			return this.client.GetPreSignedUrl(request);
 		}
 		public string GetDownloadUrl(string path, string fileName)
 		{
-			var contentDisposition = string.Format("attachment;filename=\"{0}\"", fileName);
-			var overrides = new ResponseHeaderOverrides { ContentDisposition = contentDisposition };
-			var request = this.GetPreSignedUrlRequest(path)
-				.WithResponseHeaderOverrides(overrides);
-
-			return this.client.GetPreSignedURL(request);
+			var request = this.factory.PreSignedUrl(path, fileName, DateTime.UtcNow + this.UrlValidity);
+			return this.client.GetPreSignedUrl(request);
 		}
-		private GetPreSignedUrlRequest GetPreSignedUrlRequest(string path)
-		{
-			return new GetPreSignedUrlRequest()
-				.WithKey(path)
-				.WithProtocol(Protocol.HTTPS)
-				.WithBucketName(this.bucketName)
-				.WithExpires(DateTime.UtcNow.Add(this.UrlValidity))
-				.WithVerb(HttpVerb.GET);
-		}
-
 		public void Download(string remotePath, string localPath)
 		{
 			using (var remote = this.Get(remotePath))
-			using (var local = File.OpenWrite(localPath))
+			using (var local = this.fileSystem.OpenWrite(localPath))
 				remote.CopyTo(local);
 		}
 		public void Upload(string localPath, string remotePath)
 		{
-			using (var local = File.OpenRead(localPath))
+			using (var local = this.fileSystem.OpenRead(localPath))
 				this.Put(local, remotePath);
 		}
-
+		
 		public virtual bool Exists(string pathOrLocation)
 		{
 			if (IsDownloadUrl(pathOrLocation))
@@ -101,85 +57,32 @@ namespace FileStorageAdapter.AmazonS3
 
 			return pathOrLocation;
 		}
-		public virtual void Rename(string source, string destination)
-		{
-			var copyRequest = new CopyObjectRequest()
-				.WithSourceBucket(this.bucketName)
-				.WithSourceKey(source)
-				.WithDestinationBucket(this.bucketName)
-				.WithDestinationKey(destination)
-				.WithTimeout(int.MaxValue);
-
-			var deleteRequest = new DeleteObjectRequest()
-				.WithBucketName(this.bucketName)
-				.WithKey(source);
-
-			ExecuteAndThrowOnFailure(() =>
-			{
-				using (this.client.CopyObject(copyRequest))
-				using (this.client.DeleteObject(deleteRequest))
-					return 0;
-			});
-		}
-		public virtual void Delete(string path)
-		{
-			var request = new DeleteObjectRequest
-			{
-				BucketName = this.bucketName,
-				Key = RemotePath.Normalize(path)
-			};
-
-			ExecuteAndThrowOnFailure(() =>
-			{
-				using (this.client.DeleteObject(request))
-					return 0;
-			});
-		}
 		
-		public virtual IEnumerable<string> EnumerateObjects(string location)
+		public void Rename(string source, string destination)
 		{
-			if (location.StartsWith(ForwardSlash))
-				location = location.Substring(1);
-
-			var request = new ListObjectsRequest
-			{
-				BucketName = this.bucketName,
-				Prefix = location,
-				Delimiter = ForwardSlash
-			};
-
-			return ExecuteAndThrowOnFailure(() =>
-			{
-				using (var response = this.client.ListObjects(request))
-					return response.S3Objects.Select(s3Object => s3Object.Key);
-			});
-		}
-
-		public virtual Stream Get(string path)
-		{
-			var request = new GetObjectRequest()
-				.WithBucketName(this.bucketName)
-				.WithKey(RemotePath.Normalize(path))
-				.WithTimeout(int.MaxValue);
-
-			return ExecuteAndThrowOnFailure(() => new DisposableS3ResponseStream(this.client.GetObject(request)));
-		}
-		public virtual void Put(Stream input, string path)
-		{
-			var request = new PutObjectRequest
-			{
-				BucketName = this.bucketName,
-				InputStream = input,
-				Key = RemotePath.Normalize(path),
-				GenerateMD5Digest = true,
-				Timeout = int.MaxValue
-			};
-
 			ExecuteAndThrowOnFailure(() =>
 			{
-				using (this.client.PutObject(request))
-					return 0;
+				this.client.CopyObject(this.factory.Copy(source, destination));
+				this.client.DeleteObject(this.factory.Delete(source));
+				return true;
 			});
+		}
+		public void Delete(string path)
+		{
+			ExecuteAndThrowOnFailure(() => this.client.DeleteObject(this.factory.Delete(path)));
+		}
+		public IEnumerable<string> EnumerateObjects(string location)
+		{
+			return ExecuteAndThrowOnFailure(() =>
+				this.client.ListObjects(this.factory.ListObjects(location)));
+		}
+		public Stream Get(string path)
+		{
+			return ExecuteAndThrowOnFailure(() => this.client.GetObject(this.factory.Get(path)));
+		}
+		public void Put(Stream input, string path)
+		{
+			ExecuteAndThrowOnFailure(() => this.client.PutObject(this.factory.Put(input, path)));
 		}
 
 		private static T ExecuteAndThrowOnFailure<T>(Func<T> func)
@@ -193,20 +96,46 @@ namespace FileStorageAdapter.AmazonS3
 				if (e.ErrorCode == AmazonS3ErrorCodes.NoSuchKey)
 					throw new FileNotFoundException(e.Message, e);
 
-				throw BuildException(e);
+				throw new FileStorageException(e.Message, e);
 			}
 			catch (WebException e)
 			{
-				throw new StorageUnavailableException(e.Message, e);	
+				throw new StorageUnavailableException(e.Message, e);
 			}
 			catch (Exception e)
 			{
-				throw BuildException(e);
+				throw new FileStorageException(e.Message, e);
 			}
 		}
-		private static FileStorageException BuildException(Exception e)
+
+		public TimeSpan UrlValidity { get; set; }
+
+		public AmazonS3Storage(
+			AmazonS3Client client, AmazonS3RequestFactory factory, IFileSystem fileSystem, string bucketName)
 		{
-			return new FileStorageException(e.Message, e);
+			this.client = client;
+			this.factory = factory;
+			this.fileSystem = fileSystem;
+			this.bucketName = bucketName;
+			this.UrlValidity = DefaultUrlValidity;
 		}
+
+		public void Dispose()
+		{
+			this.Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+				this.client.Dispose();
+		}
+
+		private const string DownloadUrlTemplate = "{0}.s3.amazonaws.com";
+		private static readonly TimeSpan DefaultUrlValidity = TimeSpan.FromSeconds(30);
+		private readonly AmazonS3Client client;
+		private readonly AmazonS3RequestFactory factory;
+		private readonly IFileSystem fileSystem;
+		private readonly string bucketName;
 	}
 }

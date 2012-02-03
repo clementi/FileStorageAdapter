@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B86E149E-8296-48E8-8645-9EDCBF26E577}</ProjectGuid>
+    <ProjectGuid>{7072FE1A-AFE6-4EAC-9898-389591E2F586}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FileStorageAdapter.LocalFileSystem.Tests</RootNamespace>
-    <AssemblyName>FileStorageAdapter.LocalFileSystem.Tests</AssemblyName>
+    <RootNamespace>FileStorageAdapter.AmazonS3.Tests</RootNamespace>
+    <AssemblyName>FileStorageAdapter.AmazonS3.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,20 +31,35 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="LocalFileStorage.cs" />
+    <Compile Include="ExistsTests.cs" />
+    <Compile Include="RenameTests.cs" />
+    <Compile Include="DeleteTests.cs" />
+    <Compile Include="EnumerateTests.cs" />
+    <Compile Include="ExceptionTests.cs" />
+    <Compile Include="GetTests.cs" />
+    <Compile Include="AmazonS3RequestFactoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PutTests.cs" />
+    <Compile Include="using_amazon_storage.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="AWSSDK">
+      <HintPath>..\..\..\lib\awssdk-bin\AWSSDK.dll</HintPath>
+    </Reference>
     <Reference Include="Machine.Specifications, Version=0.5.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Machine.Specifications.0.5.3.0\lib\Machine.Specifications.dll</HintPath>
     </Reference>
+    <Reference Include="Moq, Version=4.0.10827.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\proj\FileStorageAdapter.LocalFileSystem\FileStorageAdapter.LocalFileSystem.csproj">
-      <Project>{FE23A9E5-2C3E-4864-8A3F-9ACE9024F9C6}</Project>
-      <Name>FileStorageAdapter.LocalFileSystem</Name>
+    <ProjectReference Include="..\..\proj\FileStorageAdapter.AmazonS3\FileStorageAdapter.AmazonS3.csproj">
+      <Project>{6907CC8F-BBE6-4131-8C1B-BA468BD516B5}</Project>
+      <Name>FileStorageAdapter.AmazonS3</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\proj\FileStorageAdapter\FileStorageAdapter.csproj">
       <Project>{89E431FE-E26D-4CC9-BFF1-B38D5AC28AA6}</Project>
