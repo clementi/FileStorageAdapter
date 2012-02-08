@@ -34,7 +34,10 @@ namespace FileStorageAdapter.AmazonS3.Tests
 
 		private const string Bucket = "bucket";
 		private const string AccessKey = "asdf";
-		private static readonly AmazonS3Storage Storage = AmazonS3StorageBuilder.Build(AccessKey, "qwer", Bucket);
+		private static readonly AmazonS3Storage Storage = AmazonS3StorageBuilder
+			.UsingCredentials(AccessKey, "qwer")
+			.InBucket(Bucket)
+			.Build();
 		private static Uri url;
 	}
 
@@ -70,7 +73,10 @@ namespace FileStorageAdapter.AmazonS3.Tests
 		private const string Bucket = "bucket";
 		private const string AccessKey = "asdf";
 		private const string GivenName = "Filename.zip";
-		private static readonly AmazonS3Storage Storage = AmazonS3StorageBuilder.Build(AccessKey, "qwer", Bucket);
+		private static readonly AmazonS3Storage Storage = AmazonS3StorageBuilder
+			.UsingCredentials(AccessKey, "qwer")
+			.InBucket(Bucket)
+			.Build();
 		private static Uri url;
 	}
 }

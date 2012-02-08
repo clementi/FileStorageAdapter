@@ -131,7 +131,9 @@
 		private static readonly string AwsAccessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
 		private static readonly string AwsSecretAccessKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
 		private static readonly AmazonS3Storage Storage = AmazonS3StorageBuilder
-			.Build(AwsAccessKey, AwsSecretAccessKey, BucketName);
+			.UsingCredentials(AwsAccessKey, AwsSecretAccessKey)
+			.InBucket(BucketName)
+			.Build();
 		private static decimal passed;
 		private static decimal failed;
 	}
