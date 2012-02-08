@@ -2,18 +2,21 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7072FE1A-AFE6-4EAC-9898-389591E2F586}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{25170EC5-BF69-407B-B62A-1BFE6BC04F10}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FileStorageAdapter.AmazonS3.Tests</RootNamespace>
-    <AssemblyName>FileStorageAdapter.AmazonS3.Tests</AssemblyName>
+    <RootNamespace>FileStorageAdapter.AmazonS3.IntegrationTests</RootNamespace>
+    <AssemblyName>FileStorageAdapter.AmazonS3.IntegrationTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,7 +25,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -31,34 +35,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DownloadTests.cs" />
-    <Compile Include="ExistsTests.cs" />
-    <Compile Include="GetDownloadUrlTests.cs" />
-    <Compile Include="RenameTests.cs" />
-    <Compile Include="DeleteTests.cs" />
-    <Compile Include="EnumerateTests.cs" />
-    <Compile Include="ExceptionTests.cs" />
-    <Compile Include="GetTests.cs" />
-    <Compile Include="AmazonS3RequestFactoryTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PutTests.cs" />
-    <Compile Include="UploadTests.cs" />
-    <Compile Include="using_amazon_storage.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="AWSSDK">
-      <HintPath>..\..\..\lib\awssdk-bin\AWSSDK.dll</HintPath>
-    </Reference>
-    <Reference Include="Machine.Specifications, Version=0.5.3.0, Culture=neutral, PublicKeyToken=5c474de7a495cff1, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Machine.Specifications">
       <HintPath>..\..\packages\Machine.Specifications-Signed.0.5.3.0\lib\Machine.Specifications.dll</HintPath>
     </Reference>
-    <Reference Include="Moq, Version=4.0.10827.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Web" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\proj\FileStorageAdapter.AmazonS3\FileStorageAdapter.AmazonS3.csproj">
@@ -71,6 +61,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

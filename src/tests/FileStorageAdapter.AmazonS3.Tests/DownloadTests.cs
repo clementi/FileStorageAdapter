@@ -56,6 +56,9 @@ namespace FileStorageAdapter.AmazonS3.Tests
 			this.capturer.Write(buffer, offset, count);
 		}
 
+		public override bool CanRead { get { return true; } }
+		public override bool CanWrite { get { return true; } }
+
 		#region--Not Implemented--
 
 		public override void Flush()
@@ -74,15 +77,7 @@ namespace FileStorageAdapter.AmazonS3.Tests
 		{
 			throw new System.NotImplementedException();
 		}
-		public override bool CanRead
-		{
-			get { throw new System.NotImplementedException(); }
-		}
 		public override bool CanSeek
-		{
-			get { throw new System.NotImplementedException(); }
-		}
-		public override bool CanWrite
 		{
 			get { throw new System.NotImplementedException(); }
 		}

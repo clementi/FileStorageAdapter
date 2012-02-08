@@ -33,7 +33,7 @@ namespace FileStorageAdapter.LocalFileSystem
 		}
 		public string GetDownloadUrl(string path, string fileName)
 		{
-			return GetDownloadUrl(path);
+			return this.GetDownloadUrl(path);
 		}
 
 		public void Download(string remotePath, string localPath)

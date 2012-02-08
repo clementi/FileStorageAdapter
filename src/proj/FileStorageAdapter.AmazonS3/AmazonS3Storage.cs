@@ -32,7 +32,7 @@
 		
 		public virtual bool Exists(string pathOrLocation)
 		{
-			if (IsDownloadUrl(pathOrLocation))
+			if (this.IsDownloadUrl(pathOrLocation))
 				pathOrLocation = ExtractPathFromUrl(pathOrLocation);
 
 			try

@@ -151,7 +151,6 @@ namespace FileStorageAdapter.AmazonS3.Tests
 			request.ResponseHeaderOverrides.ContentDisposition.ShouldContain("this-is-a-different-name.zip");
 	}
 
-
 	[Subject("Generating Amazon S3 Get requests")]
 	public class when_the_path_delimiters_are_not_consistent
 	{
