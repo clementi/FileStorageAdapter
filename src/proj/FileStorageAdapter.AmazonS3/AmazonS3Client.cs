@@ -2,7 +2,6 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.IO;
 	using System.Linq;
 	using Amazon.S3;
 	using Amazon.S3.Model;
@@ -17,9 +16,9 @@
 		{
 			return this.client.ListObjects(request).S3Objects.Select(x => x.Key);
 		}
-		public virtual Stream GetObject(GetObjectRequest request)
+		public virtual GetObjectResponse GetObject(GetObjectRequest request)
 		{
-			return this.client.GetObject(request).ResponseStream;
+			return client.GetObject(request);
 		}
 		public virtual bool PutObject(PutObjectRequest request)
 		{
@@ -50,7 +49,7 @@
 		}
 		protected virtual void Dispose(bool disposing)
 		{
-			if (disposing)
+			if (disposing && this.client != null)
 				this.client.Dispose();
 		}
 	

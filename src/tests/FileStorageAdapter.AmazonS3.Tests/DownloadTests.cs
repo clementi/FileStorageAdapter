@@ -18,8 +18,8 @@ namespace FileStorageAdapter.AmazonS3.Tests
 		It should_place_the_file_at_the_specified_location = () =>
 		{
 			DownloadedStream.Seek(0, SeekOrigin.Begin);
-			var download = new StreamReader(DownloadedStream);
-			download.ReadToEnd().ShouldEqual(Contents);
+			using (var download = new StreamReader(DownloadedStream))
+				download.ReadToEnd().ShouldEqual(Contents);
 		};
 
 		const string Remote = "Remote";
@@ -34,7 +34,7 @@ namespace FileStorageAdapter.AmazonS3.Tests
 
 			client
 				.Setup(x => x.GetObject(Moq.It.Is<GetObjectRequest>(y => y.Key == Remote)))
-				.Returns(RemoteStream);
+				.Returns(new GetObjectResponse{ ResponseStream = RemoteStream });
 			
 			fileSystem
 				.Setup(x => x.OpenWrite(Local))

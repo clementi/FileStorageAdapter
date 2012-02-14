@@ -139,7 +139,7 @@ namespace FileStorageAdapter.AmazonS3.Tests
 
 		Establish context = () => factory = new AmazonS3RequestFactory(Bucket);
 
-		Because of = () => request = factory.PreSignedUrl(Key, "this+is=a#different%name.zip", DateTime.MaxValue);
+		Because of = () => request = factory.PreSignedUrl(Key, "this+is=a#different%name$asdf.zip", DateTime.MaxValue);
 
 		It should_override_the_content_disposition = () =>
 			request.ResponseHeaderOverrides.ContentDisposition.ShouldNotBeNull();
@@ -148,7 +148,7 @@ namespace FileStorageAdapter.AmazonS3.Tests
 			request.ResponseHeaderOverrides.ContentDisposition.ShouldContain("attachment;");
 
 		It should_sanitize_the_alternate_name_before_adding_it_the_content_disposition_header = () =>
-			request.ResponseHeaderOverrides.ContentDisposition.ShouldContain("this-is-a-different-name.zip");
+			request.ResponseHeaderOverrides.ContentDisposition.ShouldContain("this-is-a-different-name-asdf.zip");
 	}
 
 	[Subject("Generating Amazon S3 Get requests")]

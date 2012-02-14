@@ -39,7 +39,7 @@ namespace FileStorageAdapter.AmazonS3.Tests
 		{
 			client
 				.Setup(x => x.GetObject(Moq.It.Is<GetObjectRequest>(y => y.Key == Path)))
-				.Returns(new MemoryStream());
+				.Returns(new GetObjectResponse { ResponseStream = new MemoryStream() });
 		}
 	}
 
@@ -74,7 +74,7 @@ namespace FileStorageAdapter.AmazonS3.Tests
 		{
 			client
 				.Setup(x => x.GetObject(Moq.It.Is<GetObjectRequest>(y => y.Key == Path)))
-				.Returns(new MemoryStream());
+				.Returns(new GetObjectResponse { ResponseStream = new MemoryStream() });
 		}
 	}
 

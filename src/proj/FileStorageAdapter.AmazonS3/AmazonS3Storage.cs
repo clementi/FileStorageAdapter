@@ -78,7 +78,8 @@
 		}
 		public Stream Get(string path)
 		{
-			return ExecuteAndThrowOnFailure(() => this.client.GetObject(this.factory.Get(path)));
+			return ExecuteAndThrowOnFailure(() => 
+				new DisposableS3ResponseStream(this.client.GetObject(this.factory.Get(path))));
 		}
 		public void Put(Stream input, string path)
 		{

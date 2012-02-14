@@ -16,7 +16,8 @@ namespace FileStorageAdapter.AmazonS3.Tests
 
 		Because of = () => result = storage.Get(Key);
 
-		It stream_the_object = () => result.ShouldNotBeNull();
+		It should_wrap_the_response_in_order_to_avoid_gargabe_collection_of_the_response_stream = () => 
+			result.ShouldBeOfType(typeof(DisposableS3ResponseStream));
 		It should_receive_the_correct_contents = EnsureCorrectContents;
 
 		const string Key = "Key";
@@ -33,7 +34,7 @@ namespace FileStorageAdapter.AmazonS3.Tests
 		{
 			client
 				.Setup(x => x.GetObject(Moq.It.Is<GetObjectRequest>(y => y.Key == Key)))
-				.Returns(new MemoryStream(new UTF8Encoding().GetBytes(RemoteContents)));
+				.Returns(new GetObjectResponse { ResponseStream = new MemoryStream(new UTF8Encoding().GetBytes(RemoteContents)) });
 		}
 
 		private static void EnsureCorrectContents()
