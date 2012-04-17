@@ -1,11 +1,15 @@
 namespace FileStorageAdapter.LocalFileSystem
 {
+	using System;
 	using System.Collections.Generic;
 	using System.IO;
+	using System.Linq;
 
 	public class LocalFileStorage : IStoreFiles
 	{
 		private const string DownloadUrlPrefix = "file:///";
+		private const string Backslash = "\\";
+		private const string ForwardSlash = "/";
 		private readonly string remoteLocationPrefix;
 
 		public LocalFileStorage(string remoteLocationPrefix)
@@ -90,6 +94,11 @@ namespace FileStorageAdapter.LocalFileSystem
 		{
 			return Directory.EnumerateFileSystemEntries(this.Prefix(location));
 		}
+		public virtual IEnumerable<string> EnumerateObjects(string location, Func<DateTime, bool> lastModifiedFilter)
+		{
+			return Directory.EnumerateFileSystemEntries(this.Prefix(location))
+				.Where(x => lastModifiedFilter(File.GetCreationTimeUtc(x)));
+		}
 		
 		public virtual Stream Get(string path)
 		{
@@ -113,7 +122,7 @@ namespace FileStorageAdapter.LocalFileSystem
 
 		private string Prefix(string path)
 		{
-			if (path.StartsWith("/") || path.StartsWith("\\"))
+			if (path.StartsWith(ForwardSlash) || path.StartsWith(Backslash))
 				path = path.Substring(1);
 
 			return Path.Combine(this.remoteLocationPrefix, path);

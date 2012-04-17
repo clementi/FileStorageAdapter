@@ -1,5 +1,6 @@
 namespace FileStorageAdapter
 {
+	using System;
 	using System.Collections.Generic;
 	using System.IO;
 
@@ -15,7 +16,8 @@ namespace FileStorageAdapter
 		void Delete(string path);
 
 		IEnumerable<string> EnumerateObjects(string location);
-	
+		IEnumerable<string> EnumerateObjects(string location, Func<DateTime, bool> lastModifiedFilter);
+
 		Stream Get(string path);
 		void Put(Stream input, string path);
 	}

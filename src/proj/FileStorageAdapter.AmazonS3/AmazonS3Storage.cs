@@ -76,6 +76,11 @@
 			return ExecuteAndThrowOnFailure(() =>
 				this.client.ListObjects(this.factory.ListObjects(location)));
 		}
+		public IEnumerable<string> EnumerateObjects(string location, Func<DateTime, bool> lastModifiedFilter)
+		{
+			return ExecuteAndThrowOnFailure(() =>
+				this.client.ListObjects(this.factory.ListObjects(location), lastModifiedFilter));
+		}
 		public Stream Get(string path)
 		{
 			return ExecuteAndThrowOnFailure(() => 

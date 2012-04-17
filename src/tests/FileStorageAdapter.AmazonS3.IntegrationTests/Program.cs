@@ -17,6 +17,7 @@
 			Try(Download);
 			Try(Rename);
 			Try(Upload);
+			Try(Filter);
 			Try(GetDownloadUrl);
 			Try(Delete);
 			Try(Cleanup);
@@ -88,6 +89,14 @@
 			Storage.Upload(LocalPath, RemotePath1);
 			Storage.Exists(RemotePath1).ShouldBeTrue();
 			Storage.EnumerateObjects(Root).ShouldContain(RemotePath1);
+		}
+		private static void Filter()
+		{
+			Storage.Upload(LocalPath, RemotePath1);
+			var uploaded = DateTime.UtcNow;
+			Storage.Exists(RemotePath1).ShouldBeTrue();
+			Storage.EnumerateObjects(Root, modified => modified < uploaded).ShouldContain(RemotePath1);
+			Storage.EnumerateObjects(Root, modified => modified > uploaded).ShouldBeEmpty();
 		}
 		private static void GetDownloadUrl()
 		{

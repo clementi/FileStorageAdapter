@@ -7,6 +7,7 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
+	using System.Threading;
 	using Machine.Specifications;
 
 	[Subject(typeof(LocalFileStorage))]
@@ -208,13 +209,10 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 	[Subject(typeof(LocalFileStorage))]
 	public class when_enumerating_directory_contents_of_an_existing_directory : using_the_local_file_storage_adapter
 	{
-		static readonly IEnumerable<string> Expected = new List<string> { First, Second, InnerTempPath };
-		static IEnumerable<string> actual;
-
 		Establish context = () =>
 		{
-			File.AppendAllText(Path.Combine(TempPath, First), Contents);
-			File.AppendAllText(Path.Combine(TempPath, Second), Contents);
+			File.AppendAllText(Expected.First(), Contents);
+			File.AppendAllText(Expected.Last(), Contents);
 			Directory.CreateDirectory(InnerTempPath);
 		};
 
@@ -222,11 +220,55 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 			actual = Storage.EnumerateObjects(string.Empty);
 
 		It should_return_all_entries = () =>
-		{
-			foreach (var thing in Expected)
-				actual.ShouldContain(Path.Combine(TempPath, thing));
+			actual.SequenceEqual(Expected).ShouldBeTrue();
 
-			actual.Count().ShouldEqual(Expected.Count());
+		static IEnumerable<string> actual;
+		static readonly IList<string> Expected = new List<string>
+		{
+			Path.Combine(TempPath, First), 
+			InnerTempPath,
+			Path.Combine(TempPath, Second)
+		};
+	}
+
+	[Subject(typeof(LocalFileStorage))]
+	public class when_enumerating_directory_contents_of_a_NON_directory : using_the_local_file_storage_adapter
+	{
+		Establish context = () =>
+			File.AppendAllText(path, Contents);
+
+		Because of = () =>
+			exception = Catch.Exception(() => Storage.EnumerateObjects(path));
+
+		It should_throw_an_exception = () =>
+			exception.ShouldBeOfType<IOException>();
+
+		static string path = Path.Combine(TempPath, First);
+	}
+
+	[Subject(typeof(LocalFileStorage))]
+	public class when_enumarating_using_a_filter : using_the_local_file_storage_adapter
+	{
+		Establish context = () =>
+		{
+			File.AppendAllText(Expected.First(), Contents);
+			Thread.Sleep(100);
+			threshold = DateTime.UtcNow;
+			File.AppendAllText(Expected.Last(), Contents);
+			Directory.CreateDirectory(InnerTempPath);
+		};
+
+		Because of = () =>
+			actual = Storage.EnumerateObjects(string.Empty, date => date < threshold);
+
+		It should_only_return_files_that_match_the_given_predicate = () =>
+			actual.SequenceEqual(Expected).ShouldBeTrue();
+
+		static DateTime threshold;
+		static IEnumerable<string> actual;
+		static readonly IList<string> Expected = new List<string>
+		{
+			Path.Combine(TempPath, First), 
 		};
 	}
 
@@ -328,10 +370,17 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 
 		Establish context = () =>
 		{
-			if (Directory.Exists(TempPath))
-				Directory.Delete(TempPath, true);
+			Cleanup();
 			Directory.CreateDirectory(TempPath);
 		};
+
+		Cleanup after = Cleanup;
+
+		private static void Cleanup()
+		{
+			if (Directory.Exists(TempPath))
+				Directory.Delete(TempPath, true);
+		}
 	}
 }
 

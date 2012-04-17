@@ -16,6 +16,14 @@
 		{
 			return this.client.ListObjects(request).S3Objects.Select(x => x.Key);
 		}
+
+		public virtual IEnumerable<string> ListObjects(ListObjectsRequest request, Func<DateTime, bool> lastModifiedFilter)
+		{
+			return this.client.ListObjects(request).S3Objects
+				.Where(x => lastModifiedFilter(DateTime.Parse(x.LastModified)))
+				.Select(x => x.Key);
+		}
+		
 		public virtual GetObjectResponse GetObject(GetObjectRequest request)
 		{
 			return client.GetObject(request);
