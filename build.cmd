@@ -6,6 +6,8 @@ if not exist output ( mkdir output ) else ( del /q output\*.* )
 
 if "%1" == "clean" ( goto clean )
 
+SET EnableNuGetPackageRestore=true
+
 echo Compiling...
 msbuild /nologo /verbosity:quiet src/FileStorageAdapter.sln /p:Configuration=Release /t:Clean
 msbuild /nologo /verbosity:quiet src/FileStorageAdapter.sln /p:Configuration=Release
