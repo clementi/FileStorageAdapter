@@ -13,6 +13,8 @@
 		{
 			Try(Cleanup);
 			Try(Put);
+			Try(DoesntExist);
+			Try(Exists);
 			Try(Get);
 			Try(Download);
 			Try(Rename);
@@ -65,6 +67,14 @@
 			Storage.Exists(RemotePath1).ShouldBeTrue();
 			Storage.EnumerateObjects(Root).SequenceEqual(new[] { RemotePath1 }).ShouldBeTrue();
 		}
+		private static void DoesntExist()
+		{
+			Storage.Exists(Root + "doesnt-exist.txt").ShouldBeFalse();
+		}
+		private static void Exists()
+		{
+			Storage.Exists(RemotePath1).ShouldBeTrue();
+		}
 		private static void Get()
 		{
 			using (var content = Storage.Get(RemotePath1))
@@ -100,9 +110,9 @@
 		}
 		private static void GetDownloadUrl()
 		{
-			using (var response = WebRequest.Create(Storage.GetDownloadUrl(RemotePath1)).GetResponse())
-			using (var reader = new StreamReader(response.GetResponseStream() ?? new MemoryStream()))
-				reader.ReadToEnd().ShouldEqual(Content);
+			var url = Storage.GetDownloadUrl(RemotePath1);
+			using (var client = new WebClient())
+				client.DownloadString(url).ShouldEqual(Content);
 		}
 		private static void Delete()
 		{
@@ -141,6 +151,7 @@
 		private static readonly string AwsSecretAccessKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
 		private static readonly AmazonS3Storage Storage = AmazonS3StorageBuilder
 			.UsingCredentials(AwsAccessKey, AwsSecretAccessKey)
+			.UsingSpecifiedUrlValidityPeriod(TimeSpan.FromMinutes(10))
 			.InBucket(BucketName)
 			.Build();
 		private static decimal passed;

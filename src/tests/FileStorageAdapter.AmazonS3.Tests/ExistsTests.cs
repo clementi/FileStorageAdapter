@@ -85,7 +85,8 @@ namespace FileStorageAdapter.AmazonS3.Tests
 
 		Because of = () => found = storage.Exists("Not-there");
 
-		It should_indicate_that_the_file_does_not_exist = () => found.ShouldBeFalse();
+		It should_indicate_that_the_file_does_not_exist = () =>
+			found.ShouldBeFalse();
 
 		private const string KeyNotFound = AmazonS3ErrorCodes.NoSuchKey;
 		static bool found;
@@ -93,7 +94,7 @@ namespace FileStorageAdapter.AmazonS3.Tests
 		private static void Setup()
 		{
 			InitializeComponents();
-			client.Setup(x => x.GetObject(Moq.It.IsAny<GetObjectRequest>()))
+			client.Setup(x => x.GetObjectMetadata(Moq.It.IsAny<GetObjectMetadataRequest>()))
 				.Throws(new AmazonS3Exception(
 					KeyNotFound, HttpStatusCode.NotFound, KeyNotFound, "", "", "", "", null));
 		}

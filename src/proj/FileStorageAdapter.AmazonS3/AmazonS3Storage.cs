@@ -37,8 +37,12 @@
 
 			try
 			{
-				using (this.Get(pathOrLocation))
-					return true;
+				return ExecuteAndThrowOnFailure(() =>
+				{
+					var request = this.factory.GetMetadata(pathOrLocation);
+					using (this.client.GetObjectMetadata(request))
+						return true;
+				});
 			}
 			catch (FileNotFoundException)
 			{

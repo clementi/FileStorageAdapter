@@ -8,6 +8,12 @@
 
 	public class AmazonS3RequestFactory
 	{
+		public virtual GetObjectMetadataRequest GetMetadata(string path)
+		{
+			return new GetObjectMetadataRequest()
+				.WithBucketName(this.bucketName)
+				.WithKey(Normalize(path));
+		}
 		public virtual GetObjectRequest Get(string path)
 		{
 			return new GetObjectRequest()

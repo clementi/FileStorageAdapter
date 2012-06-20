@@ -39,6 +39,10 @@
 			}
 		}
 
+		public virtual GetObjectMetadataResponse GetObjectMetadata(GetObjectMetadataRequest request)
+		{
+			return client.GetObjectMetadata(request);
+		}
 		public virtual GetObjectResponse GetObject(GetObjectRequest request)
 		{
 			return client.GetObject(request);
