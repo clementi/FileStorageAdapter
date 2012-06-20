@@ -14,16 +14,31 @@
 		}
 		public virtual IEnumerable<string> ListObjects(ListObjectsRequest request)
 		{
-			return this.client.ListObjects(request).S3Objects.Select(x => x.Key);
+			return this.ListAllObjects(request).Select(x => x.Key);
 		}
 
 		public virtual IEnumerable<string> ListObjects(ListObjectsRequest request, Func<DateTime, bool> lastModifiedFilter)
 		{
-			return this.client.ListObjects(request).S3Objects
-				.Where(x => lastModifiedFilter(DateTime.Parse(x.LastModified)))
+			return this.ListAllObjects(request)
+				.Where(x => lastModifiedFilter(DateTime.Parse(x.Value)))
 				.Select(x => x.Key);
 		}
-		
+		private IEnumerable<KeyValuePair<string, string>> ListAllObjects(ListObjectsRequest request)
+		{
+			while (true)
+			{
+				var response = client.ListObjects(request);
+
+				foreach (var item in response.S3Objects)
+					yield return new KeyValuePair<string, string>(item.Key, item.LastModified);
+
+				if (!response.IsTruncated)
+					break;
+
+				request.Marker = response.NextMarker;
+			}
+		}
+
 		public virtual GetObjectResponse GetObject(GetObjectRequest request)
 		{
 			return client.GetObject(request);
