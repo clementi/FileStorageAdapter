@@ -27,7 +27,7 @@
 		{
 			while (true)
 			{
-				var response = client.ListObjects(request);
+				var response = this.client.ListObjects(request);
 
 				foreach (var item in response.S3Objects)
 					yield return new KeyValuePair<string, string>(item.Key, item.LastModified);
@@ -41,11 +41,11 @@
 
 		public virtual GetObjectMetadataResponse GetObjectMetadata(GetObjectMetadataRequest request)
 		{
-			return client.GetObjectMetadata(request);
+			return this.client.GetObjectMetadata(request);
 		}
 		public virtual GetObjectResponse GetObject(GetObjectRequest request)
 		{
-			return client.GetObject(request);
+			return this.client.GetObject(request);
 		}
 		public virtual bool PutObject(PutObjectRequest request)
 		{

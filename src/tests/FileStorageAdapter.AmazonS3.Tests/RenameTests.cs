@@ -23,7 +23,6 @@ namespace FileStorageAdapter.AmazonS3.Tests
 			InitializeComponents();
 			ClientCopiesObject();
 			ClientDeletesSourceObject();
-
 		}
 		private static void ClientCopiesObject()
 		{

@@ -28,14 +28,17 @@
 
 		public AmazonS3Storage Build()
 		{
-			if (string.IsNullOrEmpty(this.awsAccessKey) || string.IsNullOrEmpty(this.awsSecretAccessKey) || string.IsNullOrEmpty(bucketname))
+			if (string.IsNullOrEmpty(this.awsAccessKey) || string.IsNullOrEmpty(this.awsSecretAccessKey) || string.IsNullOrEmpty(this.bucketname))
 				throw new FileStorageException("You must provide the following: AWS Access Key, AWS Secret Access Key, and the name of an S3 Bucket.");
 
 			return new AmazonS3Storage(
 				new AmazonS3Client(AWSClientFactory.CreateAmazonS3Client(this.awsAccessKey, this.awsSecretAccessKey)),
 				new AmazonS3RequestFactory(this.bucketname),
 				new FileSystem(), 
-				this.bucketname) { UrlValidity = this.urlValidity };
+				this.bucketname)
+			{
+				UrlValidity = this.urlValidity
+			};
 		}
 
 		private AmazonS3StorageBuilder()

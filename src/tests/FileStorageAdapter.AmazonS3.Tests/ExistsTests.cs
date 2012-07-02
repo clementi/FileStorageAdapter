@@ -33,7 +33,7 @@ namespace FileStorageAdapter.AmazonS3.Tests
 			client
 				.Setup(x => x.GetObject(Moq.It.Is<GetObjectRequest>(y => y.Key != Path)))
 				.Throws(new AmazonS3Exception(
-					KeyNotFound, HttpStatusCode.NotFound, KeyNotFound, "", "", "", "", null));
+					KeyNotFound, HttpStatusCode.NotFound, KeyNotFound, string.Empty, string.Empty, string.Empty, string.Empty, null));
 		}
 		private static void ClientStreamsExistingObject()
 		{

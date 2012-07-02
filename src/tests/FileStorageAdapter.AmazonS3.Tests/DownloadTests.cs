@@ -34,7 +34,7 @@ namespace FileStorageAdapter.AmazonS3.Tests
 
 			client
 				.Setup(x => x.GetObject(Moq.It.Is<GetObjectRequest>(y => y.Key == Remote)))
-				.Returns(new GetObjectResponse{ ResponseStream = RemoteStream });
+				.Returns(new GetObjectResponse { ResponseStream = RemoteStream });
 			
 			fileSystem
 				.Setup(x => x.OpenWrite(Local))
