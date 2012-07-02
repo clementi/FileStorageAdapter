@@ -92,12 +92,15 @@ namespace FileStorageAdapter.LocalFileSystem
 		
 		public virtual IEnumerable<string> EnumerateObjects(string location)
 		{
+			if (!File.Exists(location) && !Directory.Exists(location))
+				return new string[0];
+
+			// attempting to enumerate a file will throw an IOException
 			return Directory.EnumerateFileSystemEntries(this.Prefix(location));
 		}
 		public virtual IEnumerable<string> EnumerateObjects(string location, Func<DateTime, bool> lastModifiedFilter)
 		{
-			return Directory.EnumerateFileSystemEntries(this.Prefix(location))
-				.Where(x => lastModifiedFilter(File.GetCreationTimeUtc(x)));
+			return this.EnumerateObjects(location).Where(x => lastModifiedFilter(File.GetCreationTimeUtc(x)));
 		}
 		
 		public virtual Stream Get(string path)

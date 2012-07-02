@@ -200,10 +200,12 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 	public class when_enumerating_directory_contents_of_a_nonexistent_directory : using_the_local_file_storage_adapter
 	{
 		Because of = () =>
-			exception = Catch.Exception(() => Storage.EnumerateObjects(InnerTempPath));
+			files = Storage.EnumerateObjects(InnerTempPath);
 
-		It should_raise_an_error = () =>
-			exception.ShouldBeOfType<DirectoryNotFoundException>();
+		It should_return_an_empty_set = () =>
+			files.ShouldBeEmpty();
+
+		static IEnumerable<string> files;
 	}
 
 	[Subject(typeof(LocalFileStorage))]
@@ -217,7 +219,7 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 		};
 
 		Because of = () =>
-			actual = Storage.EnumerateObjects(string.Empty);
+			actual = Storage.EnumerateObjects(TempPath);
 
 		It should_return_all_entries = () =>
 			actual.SequenceEqual(Expected).ShouldBeTrue();
@@ -243,11 +245,23 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 		It should_throw_an_exception = () =>
 			exception.ShouldBeOfType<IOException>();
 
-		static string path = Path.Combine(TempPath, First);
+		static readonly string path = Path.Combine(TempPath, First);
 	}
 
 	[Subject(typeof(LocalFileStorage))]
-	public class when_enumarating_using_a_filter : using_the_local_file_storage_adapter
+	public class when_enumerating_a_nonexistent_directory_using_a_filter : using_the_local_file_storage_adapter
+	{
+		Because of = () =>
+			files = Storage.EnumerateObjects(InnerTempPath, x => true);
+
+		It should_return_an_empty_set = () =>
+			files.ShouldBeEmpty();
+
+		static IEnumerable<string> files;
+	}
+
+	[Subject(typeof(LocalFileStorage))]
+	public class when_enumerating_using_a_filter : using_the_local_file_storage_adapter
 	{
 		Establish context = () =>
 		{
@@ -259,7 +273,7 @@ namespace FileStorageAdapter.LocalFileSystem.Tests
 		};
 
 		Because of = () =>
-			actual = Storage.EnumerateObjects(string.Empty, date => date < threshold);
+			actual = Storage.EnumerateObjects(TempPath, date => date < threshold);
 
 		It should_only_return_files_that_match_the_given_predicate = () =>
 			actual.SequenceEqual(Expected).ShouldBeTrue();
