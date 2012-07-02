@@ -62,7 +62,7 @@ namespace FileStorageAdapter.AmazonS3.Tests
 			client
 				.Setup(x => x.GetObject(Moq.It.IsAny<GetObjectRequest>()))
 				.Throws(new AmazonS3Exception(
-					UnknownError, HttpStatusCode.NotFound, UnknownError, "", "", "", "", null));
+					UnknownError, HttpStatusCode.NotFound, UnknownError, string.Empty, string.Empty, string.Empty, string.Empty, null));
 		}
 	}
 
