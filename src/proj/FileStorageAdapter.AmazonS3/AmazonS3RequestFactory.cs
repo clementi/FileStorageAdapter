@@ -27,7 +27,7 @@
 			{
 				BucketName = this.bucketName,
 				InputStream = input,
-				Key = Normalize(path),	
+				Key = Normalize(path),
 				GenerateMD5Digest = true,
 				Timeout = int.MaxValue,
 				ServerSideEncryptionMethod = ServerSideEncryptionMethod.AES256
@@ -80,7 +80,17 @@
 
 		private static string Normalize(string path)
 		{
-			return path.Replace(Backslash, ForwardSlash);
+			return TrimLeadingSlash(path.Replace(Backslash, ForwardSlash));
+		}
+		private static string TrimLeadingSlash(string path)
+		{
+			if (path.Length == 0)
+				return path;
+
+			if (!path.StartsWith("/"))
+				return path; // no more / characters to remove
+
+			return TrimLeadingSlash(path.Substring(1));
 		}
 
 		public AmazonS3RequestFactory(string bucketName)

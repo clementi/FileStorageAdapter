@@ -30,13 +30,17 @@
 				var response = this.client.ListObjects(request);
 
 				foreach (var item in response.S3Objects)
-					yield return new KeyValuePair<string, string>(item.Key, item.LastModified);
+					yield return new KeyValuePair<string, string>(Normalize(item.Key), item.LastModified);
 
 				if (!response.IsTruncated)
 					break;
 
 				request.Marker = response.NextMarker;
 			}
+		}
+		private static string Normalize(string value)
+		{
+			return "/" + value;
 		}
 
 		public virtual GetObjectMetadataResponse GetObjectMetadata(GetObjectMetadataRequest request)
