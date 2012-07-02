@@ -29,7 +29,8 @@
 				InputStream = input,
 				Key = Normalize(path),	
 				GenerateMD5Digest = true,
-				Timeout = int.MaxValue
+				Timeout = int.MaxValue,
+				ServerSideEncryptionMethod = ServerSideEncryptionMethod.AES256
 			};
 		}
 		public virtual ListObjectsRequest ListObjects(string location)
@@ -87,11 +88,11 @@
 			this.bucketName = bucketName;
 		}
 
-		private const string Hyphen = "-";
 		private const string RenameDownloadContentDisposition = "attachment;filename=\"{0}\"";
+		private const char ForwardSlash = '/';
+		private const char Backslash = '\\';
+		private const string Hyphen = "-";
 		private static readonly Regex NonWordCharacters = new Regex("[^.^\\w-]");
 		private readonly string bucketName;
-		private const char Backslash = '\\';
-		private const char ForwardSlash = '/';
 	}
 }
