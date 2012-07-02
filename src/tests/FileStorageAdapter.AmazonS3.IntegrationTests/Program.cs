@@ -149,7 +149,7 @@
 		private static readonly string LocalPath = Path.Combine(CurrentDirectory, File1);
 		private static readonly string AwsAccessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
 		private static readonly string AwsSecretAccessKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
-		private static readonly AmazonS3Storage Storage = AmazonS3StorageBuilder
+		private static readonly AmazonS3Storage Storage = new AmazonS3StorageBuilder()
 			.UsingCredentials(AwsAccessKey, AwsSecretAccessKey)
 			.UsingSpecifiedUrlValidityPeriod(TimeSpan.FromMinutes(10))
 			.InBucket(BucketName)
